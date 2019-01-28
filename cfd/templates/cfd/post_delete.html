@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% include "cfd/include_head.html" %}
+  </head>
+  <body>
+	{% include "cfd/include_header.html" %}
+    <div class="container">
+      <form method="post">{% csrf_token %}
+        Are you sure you want to delete "{{ object }}" ?
+        <input class="btn btn-primary" type="submit" value="Yes" />
+      </form>
+    </div>
+  </body>
+</html>

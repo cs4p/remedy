@@ -1,0 +1,4 @@
+username	password		Role
+admin_user	7bHADFbHSgFq	Application Admin
+user_mgr	ewB5nvxu		Can Add/Edit/Delete Users
+cfd_user	nQYCGb5V		Can add/update/delete CFD resords
