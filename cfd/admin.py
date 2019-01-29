@@ -2,14 +2,12 @@ from django.contrib import admin
 
 from .models import cfd
 
-#admin.site.register(cfd)
-
 admin.site.site_header = "Remedy Client Financial Database";
 admin.site.site_title = "Remedy Client Financial Database";
 
 class cfdAdmin(admin.ModelAdmin):
-    list_display = ['CLIENT_NAME','RETAIL_90_MAIL_RATES']
-    list_filter = ['CLIENT_NAME','RETAIL_90_MAIL_RATES']
+    list_display = ['CLIENT_NAME']
+    list_filter = ['CLIENT_NAME']
     # (TAB_NAME, TAB_TITLE)
      
     fieldsets = (
@@ -38,3 +36,4 @@ class cfdAdmin(admin.ModelAdmin):
             
 #admin.site.unregister(cfd)
 admin.site.register(cfd, cfdAdmin)
+
