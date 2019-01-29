@@ -25,7 +25,7 @@ SECRET_KEY = '1n7gsdo^198qt8@x55ojo3z0=fmx7t0)jc_wanj-yscb5c=8!r'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["remedy.myhhgttg.com"] 
 
 
 # Application definition
