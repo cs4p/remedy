@@ -1,6 +1,6 @@
 from django.db import models
-import datetime
-from dateutil.relativedelta import relativedelta
+from datetime import *; from dateutil.relativedelta import *
+import calendar
 import logging
 
 # Create your models here.
@@ -177,9 +177,8 @@ class cfd(models.Model):
         ('PEPY','PEPY')
     )
     
-    default_contract_start_date = datetime.date.today
-    #default_contract_end_date = datetime.date.today + relativedelta(years=1)
-    default_contract_end_date = datetime.date.today
+    default_contract_start_date = date.today()
+    default_contract_end_date = default_contract_start_date+relativedelta(years=+1)
     
     #define fields
     #format is [database_column_name] = models.[FiedlType]('[Display Name]',[options])
@@ -226,7 +225,7 @@ class cfd(models.Model):
     IE_ZBD = models.CharField('ZBD',max_length=50,choices=DROP_DOWN_MENU_24_CHOICES)
     IE_UAC = models.CharField('U&C',max_length=50,choices=DROP_DOWN_MENU_24_CHOICES)
     IE_GENERICS_UNDER_EXCLUSIVITY = models.CharField('Generics under Exclusivity',max_length=50,choices=DROP_DOWN_MENU_25_CHOICES)
-    IE_AUTHORIZED_GENERICS = models.CharField('Authorized Generics',max_length=50,choices=DROP_DOWN_MENU_25_CHOICES)
+    IE_AUTHORIZED_GENERICS = models.CharField('Authorized Generics',max_length=50,choices=DROP_DOWN_MENU_25_CHOICES,help_text="Authorized generics are prescription drugs produced by brand pharmaceutical companies and marketed under a private label, at generic prices. RA identified via Medispan")
     IE_PATENT_LITIGATED_GENERICS = models.CharField('Patent Litigated Generics',max_length=37,choices=DROP_DOWN_MENU_25_CHOICES)
     IE_MAC_GENERICS = models.CharField('MAC Generics',max_length=50,choices=DROP_DOWN_MENU_25_CHOICES)
     IE_NON_MAC_GENERICS = models.CharField('Non-MAC Generics',max_length=37,choices=DROP_DOWN_MENU_25_CHOICES)

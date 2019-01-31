@@ -7,7 +7,24 @@
 	{% include "cfd/include_header.html" %}
     <div class="container">
       <form  method="post">{% csrf_token %}
-        {{ form.as_p }}
+        <table>
+		{% for field in form %}
+		    <tr>
+				<td>
+					{{ field.label_tag }}
+			        {% if field.help_text %}
+						<span class="field-tip">
+						    <img src="/static/cfd/Actions-help-about-icon.png" width=20 height=20>
+						    <span class="tip-content">{{ field.help_text|safe }}</span>
+						</span>
+			        {% endif %}
+				</td> 
+				<td>{{ field }}</td>
+				<td>{{ field.errors }}</td>
+		    </tr>
+		    </div>
+		{% endfor %}
+	</table>
         <input class="btn btn-primary" type="submit" value="Save" />
       </form>
     </div>
