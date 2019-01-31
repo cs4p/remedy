@@ -1,4 +1,7 @@
 from django.db import models
+import datetime
+from dateutil.relativedelta import relativedelta
+import logging
 
 # Create your models here.
 class cfd(models.Model):
@@ -174,10 +177,16 @@ class cfd(models.Model):
         ('PEPY','PEPY')
     )
     
+    default_contract_start_date = datetime.date.today
+    #default_contract_end_date = datetime.date.today + relativedelta(years=1)
+    default_contract_end_date = datetime.date.today
+    
     #define fields
     #format is [database_column_name] = models.[FiedlType]('[Display Name]',[options])
     CLIENT_NAME = models.CharField('Client Name',max_length=255)
     REMEDY_CLIENT_ID = models.IntegerField('REMEDY Client ID',default=0)
+    START_DATE = models.DateField('Contract Start Date',default=default_contract_start_date)
+    END_DATE = models.DateField('Contract End Date',default=default_contract_end_date)
     RETAIL_90_MAIL_RATES = models.CharField('Retail-90/Retail at Mail Rates',max_length=13,choices=DROP_DOWN_MENU_23_CHOICES)
     RETAIL_90_MAIL_RATES_B_DS = models.IntegerField('Retail-90/Retail at Mail Rates Brand Days Supply Breakout',default=0)
     RETAIL_90_MAIL_RATES_G_DS = models.IntegerField('Retail-90/Retail at Mail Rates Generic Days Supply Breakout',default=0)
