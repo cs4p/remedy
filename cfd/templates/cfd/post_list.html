@@ -9,7 +9,7 @@
         <h1>Customer Financial Data</h1>
         <table>
           {% for post in object_list %}
-          <tr><td width=255><a href="{% url "cfd:post_edit" post.id %}">{{ post.CLIENT_NAME }}</a></td>
+          <tr><td width=255><a href="{% url "cfd:post_edit" post.id %}">{{ post.CLIENT }}: {{ post.START_DATE }} - {{ post.END_DATE }}</a></td>
           <td><a href="{% url "cfd:post_delete" post.id %}">Delete</a></td>
           </tr>
           {% endfor %}

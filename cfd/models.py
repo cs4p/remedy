@@ -4,10 +4,29 @@ import calendar
 import logging
 
 # Create your models here.
+class client(models.Model):
+    #define fields
+    #format is [database_column_name] = models.[FiedlType]('[Display Name]',[options])
+    CLIENT_ID = models.IntegerField('Client ID')
+    CLIENT_NAME	= models.CharField('Client Name',max_length=255)
+    CLIENT_REPORT_NAME = models.CharField('Client Report Name',max_length=255)	
+    IS_CLIENT_FLAG	= models.IntegerField('Is Client?',choices=((1,'Yes'),(2,'No')))
+    PARENT_ID = models.IntegerField('Parent',null=True)	
+    ACTIVE_CLIENT = models.IntegerField('Active Client?',choices=((1,'Yes'),(2,'No')))
+    PRIMARY_CONSULTANT_ID = models.IntegerField('Primary Consultant ID')
+    PRIMARY_CONSULTANT = models.CharField('Primary Consultant Name',max_length=255)
+    COALITION = models.CharField('Coalition',max_length=255)
+    BROKER = models.CharField('Broker',max_length=255)	
+    BOB_FLAG = models.CharField('BOB_FLAG',max_length=255)
+    
+    def __str__(self):
+            return self.CLIENT_NAME
+
 class cfd(models.Model):
     class Meta:
             verbose_name = 'Client Financial Record'
             verbose_name_plural = 'Client Financial Records'
+            #ordering = ('self.client.CLIENT_NAME',)
 
     #define drop down values
     #An iterable (e.g., a list or tuple) consisting itself of iterables of exactly two items (e.g. [(A, B), (A, B) ...]) to use as choices for this field. If choices are given, they’re enforced by model validation and the default form widget will be a select box with these choices instead of the standard text field.
@@ -177,16 +196,27 @@ class cfd(models.Model):
         ('PEPY','PEPY')
     )
     
+    DROP_DOWN_MENU_CONTRACT_TYPE_CHOICES = (
+        ('Baseline Remedy','Baseline Remedy'),
+        ('Previous PBM Contract','Previous PBM Contract'),
+        ('Standard','Standard')
+    )
+    
     default_contract_start_date = date.today()
     default_contract_end_date = default_contract_start_date+relativedelta(years=+1)
     
     #define fields
     #format is [database_column_name] = models.[FiedlType]('[Display Name]',[options])
-    CLIENT_NAME = models.CharField('Client Name',max_length=255)
-    REMEDY_CLIENT_ID = models.IntegerField('REMEDY Client ID',default=0)
+    #CLIENT_NAME = models.CharField('Client Name',max_length=255)
+    CLIENT = models.ForeignKey(
+                                client,
+                                on_delete=models.PROTECT,
+                                limit_choices_to={'ACTIVE_CLIENT': True})
     START_DATE = models.DateField('Contract Start Date',default=default_contract_start_date)
     END_DATE = models.DateField('Contract End Date',default=default_contract_end_date)
-    RETAIL_90_MAIL_RATES = models.CharField('Retail-90/Retail at Mail Rates',max_length=13,choices=DROP_DOWN_MENU_23_CHOICES)
+    CONTRACT_TYPE = models.CharField('Contract Type',max_length=25,choices=DROP_DOWN_MENU_CONTRACT_TYPE_CHOICES)
+    CONTRACT_DESCRIPTION = models.TextField('Contract Description',max_length=500,blank=True)
+    RETAIL_90_MAIL_RATES = models.CharField('Retail-90/Retail at Mail Rates',max_length=50,choices=DROP_DOWN_MENU_23_CHOICES)
     RETAIL_90_MAIL_RATES_B_DS = models.IntegerField('Retail-90/Retail at Mail Rates Brand Days Supply Breakout',default=0)
     RETAIL_90_MAIL_RATES_G_DS = models.IntegerField('Retail-90/Retail at Mail Rates Generic Days Supply Breakout',default=0)
     GUAR_BR_IZBD_DCT = models.DecimalField('Retail Brand AWP Discount (including ZBDs)',max_digits=6, decimal_places=3)
