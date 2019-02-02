@@ -3,6 +3,7 @@ from django.forms import ModelForm
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django import forms
+from django.forms.widgets import DateInput, SelectMultiple
 import logging
 
 from cfd.models import cfd
@@ -13,9 +14,28 @@ def index(request):
     
 class PostsForm(ModelForm):
     class Meta:
+        DROP_DOWN_MENU_41 = (
+            ('Transplant','Transplant'),
+            ('Hepatitis B','Hepatitis B'),
+            ('CMV Agents','CMV Agents'),
+            ('HIV','HIV'),
+            ('Anticoagulants','Anticoagulants'),
+            ('Hepatitis C','Hepatitis C'),
+            ('PCSK9','PCSK9')
+            )
+        
         model = cfd
         fields = '__all__'
-    
+        error_css_class = 'error'
+        required_css_class = 'required'
+        widgets = {
+            'START_DATE': DateInput(attrs={'class':'datepicker'}),
+            'END_DATE': DateInput(attrs={'class':'datepicker'}),
+            'NON_SPC_CLASSES': forms.SelectMultiple(choices=DROP_DOWN_MENU_41),
+        }
+        
+        
+        
     def clean(self):
         cleaned_data = super().clean()
         start_date = cleaned_data.get("START_DATE")
