@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+sudo apt-get -y install python3-venv git
+cd /srv
+python3 -m venv remedy
+cd remedy/
+source ./bin/activate
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+python get-pip.py
+pip install django
+pip install python-dateutil
+pip install django-extras
+git clone git@github.com:cs4p/remedy.git
+
+
+#install cherokee
+#sudo add-apt-repository ppa:cherokee-webserver
+
+wget http://www.cherokee-project.com/cherokee-latest-tarball -O -| tar zxvf -
+
+
+####
+#To leave the virtual environment run:
+# $ deactivate
+####
