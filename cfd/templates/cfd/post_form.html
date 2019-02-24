@@ -1,17 +1,45 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    {% include "cfd/include_head.html" %}
-  </head>
-  <body>
-	{% include "cfd/include_header.html" %}
-    <div class="container">
-      <form  method="post">{% csrf_token %}
-        <table>
-		{{ form.as_table }}
-	</table>
-        <input class="btn btn-primary" type="submit" value="Save" />
-      </form>
+{% extends 'cfd/base.html' %}
+
+{% block main %}
+    <div class="errorlist">
+        {{ form.non_field_errors }}
+        {{ form.name_of_field.errors }}
     </div>
-  </body>
-</html>
+     <form  method="post">{% csrf_token %}
+        <table>
+         {% for field in form %}
+            {% if field.name in RETAIL_90_MAIL_RATES_B_LIST %}
+                <tr class="RETAIL_90_MAIL_RATES_B_FIELD fieldWrapper">
+            {% elif field.name in RETAIL_90_MAIL_RATES_G_LIST %}
+                <tr class="RETAIL_90_MAIL_RATES_G_FIELD fieldWrapper">
+            {% else %}
+                <tr class="fieldWrapper"> <!-- no match in loop -->
+            {% endif %}
+            <td>{{ field.label_tag }}<!-- {{ field.name }} --></td><td>{{ field }}</td>
+            {% if field.help_text %}
+                <td colspan="2" class="help">{{ field.help_text|safe }}</td>
+            {% endif %}
+            </tr>
+        {% endfor %}
+       </table>
+       <input class="btn btn-primary" type="submit" value="Save" />
+    </form>
+
+    <script>
+
+    $(document).ready(function(){
+        $(".RETAIL_90_MAIL_RATES_B_FIELD").hide($("#id_RETAIL_90_MAIL_RATES_B").val().substring(0,1) != "Y");
+        $(".RETAIL_90_MAIL_RATES_G_FIELD").hide($("#id_RETAIL_90_MAIL_RATES_B").val().substring(0,1) != "Y");
+
+        $("#id_RETAIL_90_MAIL_RATES_B").change(function(){
+            $(".RETAIL_90_MAIL_RATES_B_FIELD").toggle($("#id_RETAIL_90_MAIL_RATES_B").val() != "N");
+            });
+
+        $("#id_RETAIL_90_MAIL_RATES_G").change(function(){
+            $(".RETAIL_90_MAIL_RATES_G_FIELD").toggle($("#id_RETAIL_90_MAIL_RATES_G").val() != "N");
+            });
+    });
+
+    </script>
+
+ {% endblock %}

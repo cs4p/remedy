@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    {% include "cfd/include_head.html" %}
-  </head>
-  <body>
-	{% include "cfd/include_header.html" %}
+{% extends 'cfd/base.html' %}
+
+{% block main %}
     <div class="container">
         <h1>Client Financial Data</h1>
         <table>
@@ -17,5 +13,4 @@
 <p/><p/>
         <a href="{% url "cfd:post_new" %}">New Client Financial Data entry</a>
     </div>
-  </body>
-</html>
+{% endblock %}
