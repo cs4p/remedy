@@ -35,7 +35,6 @@ class PostsForm(ModelForm):
         }
         
         
-        
     def clean(self):
         cleaned_data = super().clean()
         start_date = cleaned_data.get("START_DATE")
@@ -59,22 +58,28 @@ def post_list(request, template_name='cfd/post_list.html'):
 
 @login_required
 def post_create(request, template_name='cfd/post_form.html'):
+    RETAIL_90_MAIL_RATES_B_LIST = ["GUAR_BR90_EZBD_DCT", "GUAR_BR90_IZBD_DCT", "GUAR_BR90_DISP_FEE",
+                                   "RETAIL_90_MAIL_RATES_B_DS"]
+    RETAIL_90_MAIL_RATES_G_LIST = ["THEN GUAR_GR90_EZBD_DCT", "GUAR_GR90_IZBD_DCT", "GUAR_GR90_DISP_FEE",
+                                   "RETAIL_90_MAIL_RATES_G_DS"]
     form = PostsForm(request.POST or None)
     if form.is_valid():
         form.save()
         return redirect('cfd:post_list')
-    return render(request, template_name, {'form': form})
+    return render(request, template_name, {'form': form, "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST, "RETAIL_90_MAIL_RATES_G_LIST":RETAIL_90_MAIL_RATES_G_LIST})
 
 @login_required
 def post_update(request, pk, template_name='cfd/post_form.html'):
     post = get_object_or_404(cfd, pk=pk)
-    logger.info("START_DATE is %s" % post.START_DATE)
-    logger.info("END_DATE is %s" % post.END_DATE)
+    RETAIL_90_MAIL_RATES_B_LIST = ["GUAR_BR90_EZBD_DCT", "GUAR_BR90_IZBD_DCT", "GUAR_BR90_DISP_FEE",
+                                   "RETAIL_90_MAIL_RATES_B_DS"]
+    RETAIL_90_MAIL_RATES_G_LIST = ["THEN GUAR_GR90_EZBD_DCT", "GUAR_GR90_IZBD_DCT", "GUAR_GR90_DISP_FEE",
+                                   "RETAIL_90_MAIL_RATES_G_DS"]
     form = PostsForm(request.POST or None, instance=post)
     if form.is_valid():
         form.save()
         return redirect('cfd:post_list')
-    return render(request, template_name, {'form': form})
+    return render(request, template_name, {'form': form, "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST, "RETAIL_90_MAIL_RATES_G_LIST":RETAIL_90_MAIL_RATES_G_LIST})
 
 @login_required
 def post_delete(request, pk, template_name='cfd/post_delete.html'):
