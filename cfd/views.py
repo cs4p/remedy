@@ -14,15 +14,15 @@ def index(request):
     
 class PostsForm(ModelForm):
     class Meta:
-        DROP_DOWN_MENU_41 = (
-            ('Transplant','Transplant'),
-            ('Hepatitis B','Hepatitis B'),
-            ('CMV Agents','CMV Agents'),
-            ('HIV','HIV'),
-            ('Anticoagulants','Anticoagulants'),
-            ('Hepatitis C','Hepatitis C'),
-            ('PCSK9','PCSK9')
-            )
+        # DROP_DOWN_MENU_41 = (
+        #     ('Transplant','Transplant'),
+        #     ('Hepatitis B','Hepatitis B'),
+        #     ('CMV Agents','CMV Agents'),
+        #     ('HIV','HIV'),
+        #     ('Anticoagulants','Anticoagulants'),
+        #     ('Hepatitis C','Hepatitis C'),
+        #     ('PCSK9','PCSK9')
+        #     )
         
         model = cfd
         fields = '__all__'
@@ -31,7 +31,7 @@ class PostsForm(ModelForm):
         widgets = {
             'START_DATE': DateInput(attrs={'class':'datepicker'}),
             'END_DATE': DateInput(attrs={'class':'datepicker'}),
-            'NON_SPC_CLASSES': forms.SelectMultiple(choices=DROP_DOWN_MENU_41),
+            # 'NON_SPC_CLASSES': forms.SelectMultiple(choices=DROP_DOWN_MENU_41),
         }
         
         

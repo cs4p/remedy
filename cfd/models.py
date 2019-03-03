@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import *; from dateutil.relativedelta import *
 #from django-extras import PercentField
+from multiselectfield import MultiSelectField
 import calendar
 import logging
 
@@ -167,6 +168,6 @@ class cfd(models.Model):
     M_RATES_APPLY_TO_ALL_M = models.CharField('Mail Rates Apply to All Mail Claims',max_length=50,choices=DROP_DOWN_MENU_21_CHOICES, default="TBD")
     MAIL_REBATE_TYPE = models.CharField('Mail Rebate Type',max_length=15,choices=DROP_DOWN_MENU_42, default="TBD")
     MAIL_SPC_REBATE_TYPE = models.CharField('Mail Specialty Rebate Type',max_length=15,choices=DROP_DOWN_MENU_42, default="TBD")
-    NON_SPC_CLASSES = models.CharField('Therapy Classes Not Considered Specialty',max_length=255,blank=True)    
+    NON_SPC_CLASSES = MultiSelectField('Therapy Classes Not Considered Specialty',choices=DROP_DOWN_MENU_41,null=True,blank=True)
     OBSOLETE_NDCS = models.CharField('Obsolete NDCs',max_length=50,choices=DROP_DOWN_MENU_24_CHOICES, default="TDB")
     R90_REBATE_TYPE = models.CharField('Retail 90 Rebate Type',max_length=15,choices=DROP_DOWN_MENU_42, default="TBD")
