@@ -8,8 +8,8 @@ import logging
 
 from cfd.models import cfd
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the CFD Management index.")
+# def index(request):
+#     return HttpResponse("Hello, world. You're at the CFD Management index.")
 
     
 class PostsForm(ModelForm):

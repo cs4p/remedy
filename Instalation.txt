@@ -6,14 +6,11 @@ cd remedy/
 source ./bin/activate
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 python get-pip.py
-pip install django
-pip install python-dateutil
-pip install django-extras
 django-admin startproject remedy
 cd remedy/
 python manage.py startapp cfd
 git clone git@github.com:cs4p/remedy.git
-
+pip install -r requirements.txt
 
 #install cherokee
 #sudo add-apt-repository ppa:cherokee-webserver
@@ -25,3 +22,7 @@ wget http://www.cherokee-project.com/cherokee-latest-tarball -O -| tar zxvf -
 #To leave the virtual environment run:
 # $ deactivate
 ####
+
+## Create list of packages needed
+#pip freeze > requirements.txt
+
