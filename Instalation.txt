@@ -38,3 +38,6 @@ The virtual environment will be activated automatically and you’ll see “(rem
 
 8. Install required packages by running:
     pip install -r requirements.txt
+
+
+Walk Through on installing Django and configuring IIS: https://www.toptal.com/django/installing-django-on-iis-a-step-by-step-tutorial
