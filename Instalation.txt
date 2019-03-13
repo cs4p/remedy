@@ -1,28 +1,40 @@
-#!/usr/bin/env bash
-sudo apt-get -y install python3-venv git
-cd /srv
-python3 -m venv remedy
-cd remedy/
-source ./bin/activate
-curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-python get-pip.py
-django-admin startproject remedy
-cd remedy/
-python manage.py startapp cfd
-git clone git@github.com:cs4p/remedy.git
-pip install -r requirements.txt
+Instalation on Windows:
+1. Install Python
+    To install Python on your machine go to https://python.org/downloads/. The website should offer you a download button for the latest Python version. Download the executable installer and run it. Check the box next to Add Python 3.5 to PATH and then click Install Now.
+    After installation, open the command prompt and check that the Python version matches the version you installed by executing:
+        python --version
 
-#install cherokee
-#sudo add-apt-repository ppa:cherokee-webserver
+2. Install pip
+    pip is a package manage for Python. It makes installing and uninstalling Python packages (such as Django!) very easy. For the rest of the installation, we’ll use pip to install Python packages from the command line.
 
-wget http://www.cherokee-project.com/cherokee-latest-tarball -O -| tar zxvf -
+    To install pip on your machine, go to https://pip.pypa.io/en/latest/installing/, and follow the Installing with get-pip.py instructions.
 
+3. Install virtualenv and virtualenvwrapper
+    virtualenv and virtualenvwrapper provide a dedicated environment for each Django project you create. While not mandatory, this is considered a best practice and will save you time in the future when you’re ready to deploy your project. Simply type:
+        pip install virtualenvwrapper-win
+    Then create a virtual environment for your project:
+        mkvirtualenv remedy
+The virtual environment will be activated automatically and you’ll see “(remedy)” next to the command prompt to designate that. If you start a new command prompt, you’ll need to activate the environment again using:
+        workon remedy
 
-####
-#To leave the virtual environment run:
-# $ deactivate
-####
+4. Install Django
+    Django can be installed easily using pip within your virtual environment.
+    In the command prompt, ensure your virtual environment is active, and execute the following command:
+        pip install django
+    This will download and install the latest Django release.
+    After the installation has completed, you can verify your Django installation by executing django-admin --version in the command prompt.
 
-## Create list of packages needed
-#pip freeze > requirements.txt
+    If django-admin only displays the help text no matter what arguments it is given, there is probably a problem with the file association in Windows. Check if there is more than one environment variable set for running Python scripts in PATH. This usually occurs when there is more than one Python version installed.
 
+5. CD to the directory where you want to deploy the Django application. This should not be in the path exposed by IIS or any other web server.
+
+6. Create a new project and app by running:
+    django-admin startproject remedy
+    cd remedy
+    python manage.py startapp cfd
+
+7. Download the current version of the application from github by running:
+    git clone git@github.com:cs4p/remedy.git
+
+8. Install required packages by running:
+    pip install -r requirements.txt

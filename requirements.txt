@@ -4,3 +4,11 @@ django-multiselectfield==0.1.8
 python-dateutil==2.7.5
 pytz==2018.9
 six==1.12.0
+datetime
+django
+multiselectfield
+calendar
+logging
+cfd
+os
+sys
