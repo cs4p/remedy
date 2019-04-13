@@ -11,9 +11,11 @@ from cfd import views
 app_name = 'cfd'
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', views.post_list, name='post_list'),
-    url(r'^new$', views.post_create, name='post_new'),
-    url(r'^edit/(?P<pk>\d+)$', views.post_update, name='post_edit'),
-    url(r'^delete/(?P<pk>\d+)$', views.post_delete, name='post_delete'),
+    url(r'^$', views.cfd_list, name='cfd_list'),
+    url(r'^templates$', views.template_list, name='template_list'),
+    url(r'^new$', views.cfd_create, name='cfd_new'),
+    url(r'^edit/(?P<pk>\d+)$', views.cfd_update, name='cfd_edit'),
+    url(r'^copy/(?P<pk>\d+)$', views.cfd_copy, name='cfd_copy'),
+    url(r'^delete/(?P<pk>\d+)$', views.cfd_delete, name='cfd_delete'),
     path('accounts/', include('django.contrib.auth.urls')),
 ]

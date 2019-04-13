@@ -50,14 +50,21 @@ class PostsForm(ModelForm):
 logger = logging.getLogger('django.server')
 
 @login_required
-def post_list(request, template_name='cfd/post_list.html'):
-    posts = cfd.objects.all()
+def cfd_list(request, template_name='cfd/cfd_list.html'):
+    records = cfd.objects.filter(IS_TEMPLATE=False)
     data = {}
-    data['object_list'] = posts
+    data['object_list'] = records
     return render(request, template_name, data)
 
 @login_required
-def post_create(request, template_name='cfd/post_form.html'):
+def template_list(request, template_name='cfd/template_list.html'):
+    records = cfd.objects.filter(IS_TEMPLATE=True)
+    data = {}
+    data['object_list'] = records
+    return render(request, template_name, data)
+
+@login_required
+def cfd_create(request, template_name='cfd/cfd_form.html'):
     RETAIL_90_MAIL_RATES_B_LIST = ["GUAR_BR90_EZBD_DCT", "GUAR_BR90_IZBD_DCT", "GUAR_BR90_DISP_FEE",
                                    "RETAIL_90_MAIL_RATES_B_DS"]
     RETAIL_90_MAIL_RATES_G_LIST = ["THEN GUAR_GR90_EZBD_DCT", "GUAR_GR90_IZBD_DCT", "GUAR_GR90_DISP_FEE",
@@ -65,26 +72,41 @@ def post_create(request, template_name='cfd/post_form.html'):
     form = PostsForm(request.POST or None)
     if form.is_valid():
         form.save()
-        return redirect('cfd:post_list')
+        return redirect('cfd:cfd_list')
     return render(request, template_name, {'form': form, "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST, "RETAIL_90_MAIL_RATES_G_LIST":RETAIL_90_MAIL_RATES_G_LIST})
 
 @login_required
-def post_update(request, pk, template_name='cfd/post_form.html'):
-    post = get_object_or_404(cfd, pk=pk)
+def cfd_update(request, pk, template_name='cfd/cfd_form.html'):
+    record = get_object_or_404(cfd, pk=pk)
     RETAIL_90_MAIL_RATES_B_LIST = ["GUAR_BR90_EZBD_DCT", "GUAR_BR90_IZBD_DCT", "GUAR_BR90_DISP_FEE",
                                    "RETAIL_90_MAIL_RATES_B_DS"]
     RETAIL_90_MAIL_RATES_G_LIST = ["THEN GUAR_GR90_EZBD_DCT", "GUAR_GR90_IZBD_DCT", "GUAR_GR90_DISP_FEE",
                                    "RETAIL_90_MAIL_RATES_G_DS"]
-    form = PostsForm(request.POST or None, instance=post)
+    form = PostsForm(request.POST or None, instance=record)
     if form.is_valid():
         form.save()
-        return redirect('cfd:post_list')
+        return redirect('cfd:cfd_list')
     return render(request, template_name, {'form': form, "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST, "RETAIL_90_MAIL_RATES_G_LIST":RETAIL_90_MAIL_RATES_G_LIST})
 
 @login_required
-def post_delete(request, pk, template_name='cfd/post_delete.html'):
-    post = get_object_or_404(cfd, pk=pk)
+def cfd_delete(request, pk, template_name='cfd/cfd_delete.html'):
+    record = get_object_or_404(cfd, pk=pk)
     if request.method=='POST':
-        post.delete()
-        return redirect('cfd:post_list')
-    return render(request, template_name, {'object': post})
+        record.delete()
+        return redirect('cfd:cfd_list')
+    return render(request, template_name, {'object': record})
+
+@login_required
+def cfd_copy(request, pk, template_name="cfd/cfd_form.html"):
+    record = get_object_or_404(cfd, pk=pk)
+    record.pk=None
+    RETAIL_90_MAIL_RATES_B_LIST = ["GUAR_BR90_EZBD_DCT", "GUAR_BR90_IZBD_DCT", "GUAR_BR90_DISP_FEE",
+                                   "RETAIL_90_MAIL_RATES_B_DS"]
+    RETAIL_90_MAIL_RATES_G_LIST = ["THEN GUAR_GR90_EZBD_DCT", "GUAR_GR90_IZBD_DCT", "GUAR_GR90_DISP_FEE",
+                                   "RETAIL_90_MAIL_RATES_G_DS"]
+    form = PostsForm(request.POST or None, instance=record)
+    if form.is_valid():
+        form.save()
+        return redirect('cfd:cfd_list')
+    return render(request, template_name, {'form': form, "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST,
+                                           "RETAIL_90_MAIL_RATES_G_LIST": RETAIL_90_MAIL_RATES_G_LIST})

@@ -171,3 +171,4 @@ class cfd(models.Model):
     NON_SPC_CLASSES = MultiSelectField('Therapy Classes Not Considered Specialty',choices=DROP_DOWN_MENU_41,null=True,blank=True)
     OBSOLETE_NDCS = models.CharField('Obsolete NDCs',max_length=50,choices=DROP_DOWN_MENU_24_CHOICES, default="TDB")
     R90_REBATE_TYPE = models.CharField('Retail 90 Rebate Type',max_length=15,choices=DROP_DOWN_MENU_42, default="TBD")
+    IS_TEMPLATE = models.BooleanField("Template?")

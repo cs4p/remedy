@@ -1,11 +1,13 @@
 {% extends 'cfd/base.html' %}
+<script>
 
+</script>
 {% block main %}
     <div class="errorlist">
         {{ form.non_field_errors }}
         {{ form.name_of_field.errors }}
     </div>
-     <form  method="post">{% csrf_token %}
+     <form  method="post" id="cfd_form">{% csrf_token %}
         <table>
          {% for field in form %}
             {% if field.name in RETAIL_90_MAIL_RATES_B_LIST %}
@@ -13,7 +15,7 @@
             {% elif field.name in RETAIL_90_MAIL_RATES_G_LIST %}
                 <tr class="RETAIL_90_MAIL_RATES_G_FIELD fieldWrapper">
             {% else %}
-                <tr class="fieldWrapper"> <!-- no match in loop -->
+                <tr class="fieldWrapper"> <!-- no match in loop, normal row -->
             {% endif %}
             <td>{{ field.label_tag }}<!-- {{ field.name }} --></td><td>{{ field }}</td>
             {% if field.help_text %}
@@ -38,6 +40,10 @@
         $("#id_RETAIL_90_MAIL_RATES_G").change(function(){
             $(".RETAIL_90_MAIL_RATES_G_FIELD").toggle($("#id_RETAIL_90_MAIL_RATES_G").val() != "N");
             });
+    });
+
+    $('cfd_form :input').change(function(){
+        alert("Form changed");
     });
 
     </script>
