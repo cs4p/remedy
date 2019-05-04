@@ -21,5 +21,5 @@ from cfd import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^cfd/', include('cfd.urls')),
-    path('', views.CFDForm.cfd_list, name='cfd_list'),
+    path('', views.cfd_list, name='cfd_list'),
 ]

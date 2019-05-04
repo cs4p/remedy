@@ -1,4 +1,5 @@
 from django.contrib import admin
+from reversion.admin import VersionAdmin
 
 from .models import cfd, client
 
@@ -8,8 +9,10 @@ admin.site.site_title = "Remedy Client Financial Database";
 class clientAdmin(admin.ModelAdmin):
     list_display = ['CLIENT_NAME']
 
-class cfdAdmin(admin.ModelAdmin):
-    list_display = ['CLIENT']
+@admin.register(cfd)
+#class cfdAdmin(admin.ModelAdmin):
+class cfdAdmin(VersionAdmin):
+    list_display = ['CLIENT','START_DATE','END_DATE']
     list_filter = ['CLIENT']
     # (TAB_NAME, TAB_TITLE)
      
@@ -38,6 +41,7 @@ class cfdAdmin(admin.ModelAdmin):
             )
             
 #admin.site.unregister(cfd)
-admin.site.register(cfd, cfdAdmin)
+#admin.site.register(cfd, cfdAdmin)
 admin.site.register(client, clientAdmin)
+
 

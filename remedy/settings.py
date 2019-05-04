@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'formtools',
+    'reversion',
     #'crispy_forms',
     #'django-extras-0.3',
 ]

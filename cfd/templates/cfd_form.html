@@ -8,8 +8,8 @@
         {{ form.name_of_field.errors }}
     </div>
      <form  method="post" id="cfd_form">{% csrf_token %}
-        <table>
-         {% for field in form %}
+         <table>
+            {% for field in form %}
             {% if field.name in RETAIL_90_MAIL_RATES_B_LIST %}
                 <tr class="RETAIL_90_MAIL_RATES_B_FIELD fieldWrapper">
             {% elif field.name in RETAIL_90_MAIL_RATES_G_LIST %}

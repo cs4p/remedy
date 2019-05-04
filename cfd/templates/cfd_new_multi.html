@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+<script>
+
+</script>
+{% block main %}
+    <div class="errorlist">
+        {{ form.non_field_errors }}
+        {{ form.name_of_field.errors }}
+    </div>
+     <form  method="post" id="cfd_form">{% csrf_token %}
+         <table><tr>
+             {% for form in formset %}
+                <td>
+                <table>
+                {% if forloop.first %}
+                    {% for field in form %}
+                        {% if field.name in RETAIL_90_MAIL_RATES_B_LIST %}
+                            <tr class="RETAIL_90_MAIL_RATES_B_FIELD fieldWrapper">
+                        {% elif field.name in RETAIL_90_MAIL_RATES_G_LIST %}
+                            <tr class="RETAIL_90_MAIL_RATES_G_FIELD fieldWrapper">
+                        {% else %}
+                            <tr class="fieldWrapper"> <!-- no match in loop, normal row -->
+                        {% endif %}
+                        <td>{{ field.label_tag }}<!-- {{ field.name }} --></td>
+                        <td>{{ field }}</td></tr>
+                    {% endfor %}
+                {% else %}
+                    {% for field in form %}
+                        <tr><td>{{ field }}</td></tr>
+                    {% endfor %}
+                {% endif %}
+                </table></td>
+            {% endfor %}
+         </tr></table>
+             <input class="btn btn-primary" type="submit" value="Save" />
+
+     </form>
+
+    <script>
+
+    $(document).ready(function(){
+        $(".RETAIL_90_MAIL_RATES_B_FIELD").hide($("#id_RETAIL_90_MAIL_RATES_B").val().substring(0,1) != "Y");
+        $(".RETAIL_90_MAIL_RATES_G_FIELD").hide($("#id_RETAIL_90_MAIL_RATES_B").val().substring(0,1) != "Y");
+
+        $("#id_RETAIL_90_MAIL_RATES_B").change(function(){
+            $(".RETAIL_90_MAIL_RATES_B_FIELD").toggle($("#id_RETAIL_90_MAIL_RATES_B").val() != "N");
+            });
+
+        $("#id_RETAIL_90_MAIL_RATES_G").change(function(){
+            $(".RETAIL_90_MAIL_RATES_G_FIELD").toggle($("#id_RETAIL_90_MAIL_RATES_G").val() != "N");
+            });
+    });
+
+    $('cfd_form :input').change(function(){
+        alert("Form changed");
+    });
+
+    </script>
+
+ {% endblock %}
