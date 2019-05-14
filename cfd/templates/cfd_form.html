@@ -1,29 +1,14 @@
 {% extends 'base.html' %}
-<script>
+{% load i18n static %}
+{% load static %}
 
-</script>
 {% block main %}
     <div class="errorlist">
         {{ form.non_field_errors }}
         {{ form.name_of_field.errors }}
     </div>
      <form  method="post" id="cfd_form">{% csrf_token %}
-         <table>
-            {% for field in form %}
-            {% if field.name in RETAIL_90_MAIL_RATES_B_LIST %}
-                <tr class="RETAIL_90_MAIL_RATES_B_FIELD fieldWrapper">
-            {% elif field.name in RETAIL_90_MAIL_RATES_G_LIST %}
-                <tr class="RETAIL_90_MAIL_RATES_G_FIELD fieldWrapper">
-            {% else %}
-                <tr class="fieldWrapper"> <!-- no match in loop, normal row -->
-            {% endif %}
-            <td>{{ field.label_tag }}<!-- {{ field.name }} --></td><td>{{ field }}</td>
-            {% if field.help_text %}
-                <td colspan="2" class="help">{{ field.help_text|safe }}</td>
-            {% endif %}
-            </tr>
-        {% endfor %}
-       </table>
+            {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets %}         
        <input class="btn btn-primary" type="submit" value="Save" />
     </form>
 
@@ -49,3 +34,13 @@
     </script>
 
  {% endblock %}
+
+{% block scripts %}
+
+<script src="{% static '/admin/js/vendor/jquery/jquery.js' %}"></script>
+<script src="{% static '/admin/js/jquery.init.js' %}"></script>
+<script src="{% static '/admin/js/core.js' %}"></script>
+<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+<script src="{% static '/admin/js/collapse.js' %}"></script>
+
+{% endblock %}
