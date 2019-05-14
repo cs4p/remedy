@@ -73,3 +73,36 @@ body {
 .rTableBody {
   	display: table-row-group;
 }
+
+fieldset.collapse {
+    display: block;
+}
+
+fieldset.collapsed * {
+    display: none;
+}
+
+fieldset.collapsed h2, fieldset.collapsed {
+    display: block;
+}
+
+fieldset.collapsed {
+    border: 1px solid #eee;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+fieldset.collapsed h2 {
+    background: #f8f8f8;
+    color: #666;
+}
+
+fieldset .collapse-toggle {
+    color: #fff;
+}
+
+fieldset.collapsed .collapse-toggle {
+    background: transparent;
+    display: inline;
+    color: #447e9b;
+}
