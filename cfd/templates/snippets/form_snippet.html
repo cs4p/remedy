@@ -1,0 +1,33 @@
+{% load filters %}
+
+
+{% for fieldset in fieldsets %}
+
+    <fieldset class="module aligned collapse collapsed">
+        <h2> 
+            {{ fieldset.0 }} 
+        </h2>
+
+        {% for field in fieldset.1.fields %}
+            
+            {% with field=form|get_field_data:field %}        
+                {% if field.name in RETAIL_90_MAIL_RATES_B_LIST %}
+                    <div class="row RETAIL_90_MAIL_RATES_B_FIELD fieldWrapper">
+                {% elif field.name in RETAIL_90_MAIL_RATES_G_LIST %}
+                    <div class="row RETAIL_90_MAIL_RATES_G_FIELD fieldWrapper">
+                {% else %}
+                    <div class="row fieldWrapper"> <!-- no match in loop, normal row -->
+                {% endif %}
+                        <div class="col-6">{{ field.label_tag }}</div>
+                        <div class="col-6">{{ field.field }}</div>
+                        {% if field.help_text %}
+                            <div class="col-12 help">{{ field.help_text|safe }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endwith %}  
+                          
+        {% endfor %}
+    </fieldset>                                            
+
+{% endfor %}
