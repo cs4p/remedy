@@ -21,16 +21,6 @@ class CFDForm(ModelForm):
     logger = logging.getLogger('django.server')
 
     class Meta:
-        # DROP_DOWN_MENU_41 = (
-        #     ('Transplant','Transplant'),
-        #     ('Hepatitis B','Hepatitis B'),
-        #     ('CMV Agents','CMV Agents'),
-        #     ('HIV','HIV'),
-        #     ('Anticoagulants','Anticoagulants'),
-        #     ('Hepatitis C','Hepatitis C'),
-        #     ('PCSK9','PCSK9')
-        #     )
-
         model = m.cfd
         fields = '__all__'
         error_css_class = 'error'
