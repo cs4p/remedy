@@ -8,7 +8,20 @@
         {{ form.name_of_field.errors }}
     </div>
      <form  method="post" id="cfd_form">{% csrf_token %}
-            {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets %}         
+         <div class="row">
+            <div class="col-4">
+                {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets %}
+            </div>
+            <div class="col-4">
+                {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets %}
+            </div>
+            <div class="col-4">
+                {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets %}
+            </div>
+         </div>
+
+         
+            
        <input class="btn btn-primary" type="submit" value="Save" />
     </form>
 
