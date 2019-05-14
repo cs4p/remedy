@@ -3,14 +3,13 @@ from reversion.admin import VersionAdmin
 
 from .models import cfd, client
 
-admin.site.site_header = "Remedy Client Financial Database";
-admin.site.site_title = "Remedy Client Financial Database";
+admin.site.site_header = "Remedy Client Financial Database"
+admin.site.site_title = "Remedy Client Financial Database"
 
 class clientAdmin(admin.ModelAdmin):
     list_display = ['CLIENT_NAME']
 
 @admin.register(cfd)
-#class cfdAdmin(admin.ModelAdmin):
 class cfdAdmin(VersionAdmin):
     list_display = ['CLIENT','START_DATE','END_DATE']
     list_filter = ['CLIENT']
@@ -40,8 +39,6 @@ class cfdAdmin(VersionAdmin):
                 'fields': ('IE_SSG','IE_ZBD','IE_UAC','IE_GENERICS_UNDER_EXCLUSIVITY','IE_AUTHORIZED_GENERICS','IE_PATENT_LITIGATED_GENERICS','IE_MAC_GENERICS','IE_NON_MAC_GENERICS','IE_MAC_BRANDS','IE_ADJUSTMENTS','IE_COB_SECONDARY_CLAIMS','IE_DMR_CLAIMS','IE_EXCLUDED_PROVIDERS','IE_REJECTS','IE_REVERSALS','IE_SUBROGATION','IE_NON_DRUG_ITEMS','IE_OTC','IE_PRICING_ERROR_THRESHOLDS','IE_DAW_5','IE_COMPOUNDS','M_RATES_APPLY_TO_ALL_M','M_RATE_BREAKOUT','LDD_DISC','LDD_REBATE','BIOSIMILAR_DISC','OBSOLETE_NDCS')})
             )
             
-#admin.site.unregister(cfd)
-#admin.site.register(cfd, cfdAdmin)
 admin.site.register(client, clientAdmin)
 
 
