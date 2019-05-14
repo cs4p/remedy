@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
 
-from cfd.models import cfd
 import cfd.forms as f
+from cfd.models import cfd
+from cfd.admin import cfdAdmin
 
 RETAIL_90_MAIL_RATES_B_LIST = ["GUAR_BR90_EZBD_DCT", "GUAR_BR90_IZBD_DCT", "GUAR_BR90_DISP_FEE",
                                    "RETAIL_90_MAIL_RATES_B_DS"]
@@ -30,7 +31,15 @@ def cfd_create(request, template_name='cfd_form.html'):
     if form.is_valid():
         form.save()
         return redirect('cfd:cfd_list')
-    return render(request, template_name, {'form': form, "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST, "RETAIL_90_MAIL_RATES_G_LIST":RETAIL_90_MAIL_RATES_G_LIST})
+
+    context = {
+        'form': form,
+        'fieldsets' : cfdAdmin.fieldsets,
+        "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST,
+        "RETAIL_90_MAIL_RATES_G_LIST": RETAIL_90_MAIL_RATES_G_LIST
+    }    
+
+    return render(request, template_name, context)
 
 @login_required
 def cfd_update(request, pk, template_name='cfd_form.html'):
