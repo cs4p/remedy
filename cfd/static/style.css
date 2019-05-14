@@ -82,6 +82,19 @@ fieldset.collapsed * {
     display: none;
 }
 
+fieldset label {
+    font-weight: bold;
+}
+
+fieldset .form-row {
+    padding: 10px;
+    font-size: 13px;
+    border-bottom: 1px solid #eee;
+}
+
+fieldset .form-row >div{
+    margin: auto;
+}
 fieldset.collapsed h2, fieldset.collapsed {
     display: block;
 }
