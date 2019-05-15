@@ -99,8 +99,15 @@ fieldset.collapsed h2, fieldset.collapsed {
     display: block;
 }
 
-fieldset.collapsed {
-    border: 1px solid #eee;
+fieldset >h2 {
+    height: 30px;
+}
+
+fieldset >h2.blank {
+    background: none;
+}
+
+fieldset.collapsed {    
     border-radius: 4px;
     overflow: hidden;
 }
@@ -108,6 +115,12 @@ fieldset.collapsed {
 fieldset.collapsed h2 {
     background: #f8f8f8;
     color: #666;
+    border: 1px solid #eee;
+}
+
+fieldset.collapsed h2.blank {
+    background: none;
+    border: none;
 }
 
 fieldset .collapse-toggle {
