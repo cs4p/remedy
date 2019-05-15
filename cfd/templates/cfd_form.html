@@ -9,15 +9,24 @@
     </div>
      <form  method="post" id="cfd_form">{% csrf_token %}
          <div class="row">
-            <div class="col">
-                {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets index=0 %}
-            </div>
-            <div class="col">
-                {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets index=1 extra=True %}
-            </div>
-            <div class="col">
-                {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets index=2 extra=True last=True %}
-            </div>
+            {% if formset %}
+                {% for form in formset %}
+                    <div class="col">
+
+                         {% if forloop.counter > 1 and forloop.counter != formset|length %}
+                            {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets index=forloop.counter0 extra=True %}
+                         {% elif forloop.counter > 1 and forloop.counter == formset|length %}
+                            {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets index=forloop.counter0 extra=True last=True%}
+                         {% else %}
+                            {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets index=forloop.counter0 %}
+                         {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col">
+                    {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets index=0 last=True %}
+                </div>
+            {% endif %}           
          </div>
 
          
@@ -63,11 +72,22 @@
             }
         }
 
-        similarFields = document.getElementsByName(inputField.name);
+        var currentIndex = Number(elem.dataset.index);
+        var fieldNameSuffix = inputField.name.split("-");
+        fieldNameSuffix = fieldNameSuffix.slice(2, fieldNameSuffix.length);
+        fieldNameSuffix = fieldNameSuffix.join("-");   
 
-        for (var count=elem.dataset.index; count < similarFields.length; count++){
-            similarFields[count].value = inputField.value;
+        while (true){            
+            var nextFieldName = "form-" + String(currentIndex + 1) + "-" + fieldNameSuffix;
+            var nextField = document.getElementsByName(nextFieldName)[0];
+
+            if (nextField == undefined || nextField == null) {
+                break
+            }
             
+            nextField.value = inputField.value;
+
+            currentIndex += 1;
         }
         
     })
