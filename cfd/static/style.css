@@ -132,3 +132,12 @@ fieldset.collapsed .collapse-toggle {
     display: inline;
     color: #447e9b;
 }
+
+fieldset .input-col {
+    text-align: center;
+}
+
+fieldset .input-copy {
+    display: block;
+    height: 20px;
+}
