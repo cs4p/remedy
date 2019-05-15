@@ -9,14 +9,14 @@
     </div>
      <form  method="post" id="cfd_form">{% csrf_token %}
          <div class="row">
-            <div class="col-4">
-                {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets %}
+            <div class="col">
+                {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets index=0 %}
             </div>
-            <div class="col-4">
-                {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets extra=True %}
+            <div class="col">
+                {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets index=1 extra=True %}
             </div>
-            <div class="col-4">
-                {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets extra=True %}
+            <div class="col">
+                {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets index=2 extra=True last=True %}
             </div>
          </div>
 
@@ -25,7 +25,17 @@
        <input class="btn btn-primary" type="submit" value="Save" />
     </form>
 
-    <script>
+ {% endblock %}
+
+{% block scripts %}
+
+<script src="{% static '/admin/js/vendor/jquery/jquery.js' %}"></script>
+<script src="{% static '/admin/js/jquery.init.js' %}"></script>
+<script src="{% static '/admin/js/core.js' %}"></script>
+<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+<script src="{% static '/js/collapse.js' %}"></script>
+
+<script>
 
     $(document).ready(function(){
         $(".RETAIL_90_MAIL_RATES_B_FIELD").hide($("#id_RETAIL_90_MAIL_RATES_B").val().substring(0,1) != "Y");
@@ -40,20 +50,31 @@
             });
     });
 
+    $(".input-copy").click(function(e){
+        e.preventDefault();
+        var elem = e.target;
+        var neighbours = elem.parentElement.children;
+
+        var inputField = null;
+        for (var count = 0; count < neighbours.length; count ++){
+            var currentElem = neighbours[count];
+            if (currentElem.id === elem.dataset.target){
+                inputField = currentElem;
+            }
+        }
+
+        similarFields = document.getElementsByName(inputField.name);
+
+        for (var count=elem.dataset.index; count < similarFields.length; count++){
+            similarFields[count].value = inputField.value;
+            
+        }
+        
+    })
+
     $('cfd_form :input').change(function(){
         alert("Form changed");
     });
 
-    </script>
-
- {% endblock %}
-
-{% block scripts %}
-
-<script src="{% static '/admin/js/vendor/jquery/jquery.js' %}"></script>
-<script src="{% static '/admin/js/jquery.init.js' %}"></script>
-<script src="{% static '/admin/js/core.js' %}"></script>
-<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
-<script src="{% static '/js/collapse.js' %}"></script>
-
+</script>
 {% endblock %}
