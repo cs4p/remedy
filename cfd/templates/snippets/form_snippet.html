@@ -2,10 +2,15 @@
 
 <div>
 {% for fieldset in fieldsets %}
-    <fieldset class="module aligned collapse collapsed">
-        <h2> 
-            {{ fieldset.0 }} 
-        </h2>
+    <fieldset class="module aligned collapse collapsed {{forloop.counter}}-{{fieldset.0}}">
+        {% if extra %}
+            <h2 class="blank">                
+            </h2>
+        {% else %}
+            <h2> 
+                {{ fieldset.0 }} 
+            </h2>
+        {% endif %}        
 
         {% for field in fieldset.1.fields %}
             
