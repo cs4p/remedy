@@ -23,8 +23,16 @@
                     <div class="row form-row fieldWrapper"> <!-- no match in loop, normal row -->
                 {% endif %}
                         <div class="col-3">{{ field.label_tag }}</div>
-                        <div class="col-9">
+                        <div class="col-9 input-col">
                             {{ field.field }}
+                            {% if not last %}
+                                <a class="input-copy" href="#" data-target="{{field.field.id_for_label}}" data-index="{{index}}">
+                                    (Copy Right)
+                                </a>
+                            {% else %}
+                                <div class="input-copy"></div>
+                            {% endif %}
+
                             {% if field.help_text %}
                                 <div class="help">{{ field.help_text|safe }}</div>
                             {% endif %}
