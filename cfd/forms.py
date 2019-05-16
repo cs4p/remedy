@@ -34,6 +34,9 @@ class CFDForm(ModelForm):
             ('Client Information', {
                 'fields': ('CLIENT',)
             }),
+            ('Timing', {
+                'fields': ('START_DATE', 'END_DATE')
+            }),
             ('Retail', {
                 'classes': ['collapse'],
                 'fields': ('GUAR_BR_IZBD_DCT','GUAR_BR_EZBD_DCT','GUAR_GR_IZBD_DCT', 'GUAR_GR_EZBD_DCT','GUAR_BR_DISP_FEE','GUAR_GR_DISP_FEE','GUAR_RETAIL_ADMIN_FEE','GUAR_RETAIL_REBATE')
