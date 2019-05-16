@@ -39,15 +39,19 @@
                             
 
                             <div class="error-container">
-                                {% with error=errors|get_key:field.name %}
+                                {% if errors %}
+                                
+                                    {% with error=errors|get_key:field.name %}
 
-                                    {% if error %}
-                                        <div class="error fieldset-input-error">
-                                            {{ error }}
-                                        </div>
-                                    {% endif %}
+                                        {% if error %}
+                                            <div class="error fieldset-input-error">
+                                                {{ error }}
+                                            </div>
+                                        {% endif %}
 
-                                {% endwith %}
+                                    {% endwith %}
+
+                                {% endif %}
                                 
                             </div>
                             
