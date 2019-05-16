@@ -1,24 +1,22 @@
 {% extends 'base.html' %}
 {% load i18n static %}
+{% load filters %}
 {% load static %}
 
 {% block main %}
-    <div class="errorlist">
-        {{ form.non_field_errors }}
-        {{ form.name_of_field.errors }}
-    </div>
      <form  method="post" id="cfd_form">{% csrf_token %}
          <div class="row">
             {% if formset %}
+                {{ formset.management_form }}
                 {% for form in formset %}
+                
                     <div class="col">
-
                          {% if forloop.counter > 1 and forloop.counter != formset|length %}
-                            {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets index=forloop.counter0 extra=True %}
+                            {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets errors=formset.errors|get_index:forloop.counter0 index=forloop.counter0 extra=True %}
                          {% elif forloop.counter > 1 and forloop.counter == formset|length %}
-                            {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets index=forloop.counter0 extra=True last=True%}
+                            {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets errors=formset.errors|get_index:forloop.counter0 index=forloop.counter0 extra=True last=True%}
                          {% else %}
-                            {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets index=forloop.counter0 %}
+                            {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets errors=formset.errors|get_index:forloop.counter0 index=forloop.counter0 %}
                          {% endif %}
                     </div>
                 {% endfor %}
