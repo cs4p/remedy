@@ -36,7 +36,22 @@
                             {% if field.help_text %}
                                 <div class="help">{{ field.help_text|safe }}</div>
                             {% endif %}
-                        </div>                        
+                            
+
+                            <div class="error-container">
+                                {% with error=errors|get_key:field.name %}
+
+                                    {% if error %}
+                                        <div class="error fieldset-input-error">
+                                            {{ error }}
+                                        </div>
+                                    {% endif %}
+
+                                {% endwith %}
+                                
+                            </div>
+                            
+                        </div>                                                
                     </div>                
             {% endwith %}  
 
