@@ -13,3 +13,15 @@ def get_field_data(form, field):
         'field' : field,
         'help_text' : field.help_text
     }    
+
+@register.filter
+def get_index(array, index):
+    try:
+        return array[index]
+    except IndexError:
+        return None
+
+
+@register.filter
+def get_key(dictionary, key):
+    return dictionary.get(key, "")
