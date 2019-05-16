@@ -27,49 +27,53 @@ def template_list(request, template_name='template_list.html'):
 
 @login_required
 def cfd_create(request, template_name='cfd_form.html'):
+    CFDFormset = formset_factory(f.CFDForm, extra=3)
 
-    if request.method == "POST":        
-        form = f.CFDForm(request.POST or None)
-        if form.is_valid():
-            form.save()
-            return redirect('cfd:cfd_list')
-
-    formset = formset_factory(f.CFDForm,extra=3)
-    form = f.CFDForm()
-
-    context = {
-        'form': form,
-        'formset' : formset,
-        'fieldsets' : form.Meta.fieldsets,
+    context = {        
+        'formset' : None,
+        'fieldsets' : f.CFDForm.Meta.fieldsets,
         "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST,
         "RETAIL_90_MAIL_RATES_G_LIST": RETAIL_90_MAIL_RATES_G_LIST
     }    
+
+    if request.method == "POST":        
+        formset = CFDFormset(request.POST)
+        
+        if formset.is_valid():
+            formset.save()
+            return redirect('cfd:cfd_list')
+        else:
+            context['formset'] = formset
+
+            return render(request, template_name, context)
+
+    formset = CFDFormset()    
+    context['formset'] = formset   
 
     return render(request, template_name, context)
 
 @login_required
 def cfd_update(request, pk, template_name='cfd_form.html'):
-    if request.method == "POST":
-        form = f.CFDForm(request.POST or None, instance=record)
-        if form.is_valid():
-            form.save()
-            return redirect('cfd:cfd_list')
-
     record = get_object_or_404(cfd, pk=pk)
-    record_year1 = get_object_or_404(cfd, pk=pk)
-    record_year2 = get_object_or_404(cfd, pk=pk)
+    CFDFormset = formset_factory(f.CFDForm, extra=3)
 
-    formset = formset_factory(f.CFDForm,extra=3)()
+    if request.method == "POST":        
+        formset = CFDFormset(request.POST)
+
+        if formset.is_valid():
+            formset.save()
+            return redirect('cfd:cfd_list')
+    
+    record_year1, record_year2 = record.get_subsequent_contracts(2)
+
+    formset = CFDFormset()
     formset[0].set_initial_values(record)
     formset[1].set_initial_values(record_year1)
     formset[2].set_initial_values(record_year2)
-
-    form = f.CFDForm()
     
-    context = {
-        'form': form,
+    context = {    
         'formset' : formset,
-        'fieldsets' : form.Meta.fieldsets,
+        'fieldsets' : f.CFDForm.Meta.fieldsets,
         "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST,
         "RETAIL_90_MAIL_RATES_G_LIST": RETAIL_90_MAIL_RATES_G_LIST
     }
