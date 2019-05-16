@@ -172,3 +172,17 @@ class cfd(models.Model):
     OBSOLETE_NDCS = models.CharField('Obsolete NDCs',max_length=50,choices=DROP_DOWN_MENU_24_CHOICES, default="TDB")
     R90_REBATE_TYPE = models.CharField('Retail 90 Rebate Type',max_length=15,choices=DROP_DOWN_MENU_42, default="TBD")
     IS_TEMPLATE = models.BooleanField("Template?",default=False)
+
+    def get_subsequent_contracts(self, number_of_contracts):
+        '''
+        This function gets the specified number of subsequent contracts.
+        If no contracts are found, new ones are instantiated.
+        '''
+        contracts = cfd.objects.filter(CLIENT=self.CLIENT, START_DATE__year__gt=self.START_DATE.year).order_by('START_DATE')[:number_of_contracts]
+        
+        if not contracts:
+            contracts = [cfd(CLIENT=self.CLIENT, 
+                            START_DATE=self.START_DATE+relativedelta(years=count+1), 
+                            END_DATE=self.END_DATE+relativedelta(years=count+1)) for count in range(number_of_contracts)]
+
+        return contracts
