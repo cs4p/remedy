@@ -64,5 +64,22 @@
         for (i = 0; i < toggles.length; i++) {
             toggles[i].addEventListener('click', toggleFunc);
         }
+
+        var fieldErrors = document.getElementsByClassName('fieldset-input-error');
+        for (var count = 0; count < fieldErrors.length; count++){
+            var fieldset = closestElem(fieldErrors[0], 'fieldset'); 
+            fieldset = document.getElementsByClassName(fieldset.classList.value)[0];
+
+            if (fieldset.classList.contains('collapsed')){ 
+
+                var header = fieldset.querySelector('h2');
+                if (!header.classList.contains('blank')){
+                    header.querySelector('a').click();
+                }         
+                       
+            }
+
+            
+        }
     });
 })();
