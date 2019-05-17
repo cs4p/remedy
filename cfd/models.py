@@ -179,10 +179,32 @@ class cfd(models.Model):
         If no contracts are found, new ones are instantiated.
         '''
         contracts = cfd.objects.filter(CLIENT=self.CLIENT, START_DATE__year__gt=self.START_DATE.year).order_by('START_DATE')[:number_of_contracts]
+        contracts = list(contracts)
+
+        if len(contracts) < number_of_contracts:
+            number_of_new_contracts = number_of_contracts - len(contracts)
+            year_gap = len(contracts)
+                        
+            new_contracts = [cfd(CLIENT=self.CLIENT, 
+                            START_DATE=self.START_DATE+relativedelta(years=count + 1 + year_gap), 
+                            END_DATE=self.END_DATE+relativedelta(years=count + 1 + year_gap)) for count in range(number_of_new_contracts)]
+
+            contracts.extend(new_contracts)
+
+        return contracts
+
+    @classmethod
+    def search(cls, client_name=None, start_date=None, end_date=None):
+        contracts = cls.objects.filter(IS_TEMPLATE=False)
+
+        if client_name:
+            contracts = contracts.filter(CLIENT__CLIENT_NAME__icontains=client_name)
+
+        if start_date:
+            contracts = contracts.filter(START_DATE__gte=start_date)
+
+        if end_date:
+            contracts = contracts.filter(START_DATE__lte=end_date)
         
-        if not contracts:
-            contracts = [cfd(CLIENT=self.CLIENT, 
-                            START_DATE=self.START_DATE+relativedelta(years=count+1), 
-                            END_DATE=self.END_DATE+relativedelta(years=count+1)) for count in range(number_of_contracts)]
 
         return contracts
