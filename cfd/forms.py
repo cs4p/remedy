@@ -73,3 +73,13 @@ class CFDForm(ModelForm):
     def set_initial_values(self, instance):
         for field in self.fields.keys():
             self.fields[field].initial = getattr(instance, field)
+
+class CFDSearchForm(forms.Form):
+    client_name = forms.CharField(label='', max_length=255,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'placeholder' : 'Client Name'
+        })
+    )
+    start_date = forms.DateField(required=False)
+    end_date = forms.DateField(required=False)
