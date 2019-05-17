@@ -13,10 +13,28 @@ RETAIL_90_MAIL_RATES_G_LIST = ["THEN GUAR_GR90_EZBD_DCT", "GUAR_GR90_IZBD_DCT", 
 
 @login_required
 def cfd_list(request, template_name='cfd_list.html'):
+    if request.method == "POST":
+        form = f.CFDSearchForm(request.POST)
+
+        if form.is_valid():
+            records = cfd.search(**form.cleaned_data)
+            context = {
+                'form' : form,
+                'object_list' : records
+            }
+
+            return render(request, template_name, context)
+            
+
+    form = f.CFDSearchForm()
     records = cfd.objects.filter(IS_TEMPLATE=False)
-    data = {}
-    data['object_list'] = records
-    return render(request, template_name, data)
+    
+    context = {
+        'form' : form,
+        'object_list' : records
+    }
+      
+    return render(request, template_name, context)
 
 @login_required
 def template_list(request, template_name='template_list.html'):
