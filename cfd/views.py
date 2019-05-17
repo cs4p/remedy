@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
 
-from cfd.models import cfd
 import cfd.forms as f
+from cfd.models import cfd
+from cfd.admin import cfdAdmin
 
 RETAIL_90_MAIL_RATES_B_LIST = ["GUAR_BR90_EZBD_DCT", "GUAR_BR90_IZBD_DCT", "GUAR_BR90_DISP_FEE",
                                    "RETAIL_90_MAIL_RATES_B_DS"]
@@ -26,20 +27,58 @@ def template_list(request, template_name='template_list.html'):
 
 @login_required
 def cfd_create(request, template_name='cfd_form.html'):
-    form = f.CFDForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('cfd:cfd_list')
-    return render(request, template_name, {'form': form, "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST, "RETAIL_90_MAIL_RATES_G_LIST":RETAIL_90_MAIL_RATES_G_LIST})
+    CFDFormset = formset_factory(f.CFDForm, extra=3)
+
+    context = {        
+        'formset' : None,
+        'fieldsets' : f.CFDForm.Meta.fieldsets,
+        "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST,
+        "RETAIL_90_MAIL_RATES_G_LIST": RETAIL_90_MAIL_RATES_G_LIST
+    }    
+
+    if request.method == "POST":        
+        formset = CFDFormset(request.POST)
+        
+        if formset.is_valid():
+            formset.save()
+            return redirect('cfd:cfd_list')
+        else:
+            context['formset'] = formset
+
+            return render(request, template_name, context)
+
+    formset = CFDFormset()    
+    context['formset'] = formset   
+
+    return render(request, template_name, context)
 
 @login_required
 def cfd_update(request, pk, template_name='cfd_form.html'):
     record = get_object_or_404(cfd, pk=pk)
-    form = f.CFDForm(request.POST or None, instance=record)
-    if form.is_valid():
-        form.save()
-        return redirect('cfd:cfd_list')
-    return render(request, template_name, {'form': form, "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST, "RETAIL_90_MAIL_RATES_G_LIST":RETAIL_90_MAIL_RATES_G_LIST})
+    CFDFormset = formset_factory(f.CFDForm, extra=3)
+
+    if request.method == "POST":        
+        formset = CFDFormset(request.POST)
+
+        if formset.is_valid():
+            formset.save()
+            return redirect('cfd:cfd_list')
+    
+    record_year1, record_year2 = record.get_subsequent_contracts(2)
+
+    formset = CFDFormset()
+    formset[0].set_initial_values(record)
+    formset[1].set_initial_values(record_year1)
+    formset[2].set_initial_values(record_year2)
+    
+    context = {    
+        'formset' : formset,
+        'fieldsets' : f.CFDForm.Meta.fieldsets,
+        "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST,
+        "RETAIL_90_MAIL_RATES_G_LIST": RETAIL_90_MAIL_RATES_G_LIST
+    }
+    
+    return render(request, template_name, context)
 
 @login_required
 def cfd_delete(request, pk, template_name='cfd_delete.html'):

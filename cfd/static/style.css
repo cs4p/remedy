@@ -73,3 +73,71 @@ body {
 .rTableBody {
   	display: table-row-group;
 }
+
+fieldset.collapse {
+    display: block;
+}
+
+fieldset.collapsed * {
+    display: none;
+}
+
+fieldset label {
+    font-weight: bold;
+}
+
+fieldset .form-row {
+    padding: 10px;
+    font-size: 13px;
+    border-bottom: 1px solid #eee;
+}
+
+fieldset .form-row >div{
+    margin: auto;
+}
+fieldset.collapsed h2, fieldset.collapsed {
+    display: block;
+}
+
+fieldset >h2 {
+    height: 30px;
+}
+
+fieldset >h2.blank {
+    background: none;
+}
+
+fieldset.collapsed {    
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+fieldset.collapsed h2 {
+    background: #f8f8f8;
+    color: #666;
+    border: 1px solid #eee;
+}
+
+fieldset.collapsed h2.blank {
+    background: none;
+    border: none;
+}
+
+fieldset .collapse-toggle {
+    color: #fff;
+}
+
+fieldset.collapsed .collapse-toggle {
+    background: transparent;
+    display: inline;
+    color: #447e9b;
+}
+
+fieldset .input-col {
+    text-align: center;
+}
+
+fieldset .input-copy {
+    display: block;
+    height: 20px;
+}
