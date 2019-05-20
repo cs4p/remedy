@@ -25,3 +25,12 @@ def get_index(array, index):
 @register.filter
 def get_key(dictionary, key):
     return dictionary.get(key, "")
+
+@register.filter
+def get_form_metadata(formset, counter):
+    return {
+        'index' : counter,
+        'first' : counter == 0,
+        'last' : (counter + 1) == len(formset),
+        'extra' : counter > 0
+    }
