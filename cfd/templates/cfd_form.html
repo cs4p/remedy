@@ -9,7 +9,7 @@
             {% if formset %}
                 {{ formset.management_form }}
                 <div class="col">
-                    {% include "snippets/formset.html" with formset=formset fieldsets=fieldsets %}
+                    {% include "snippets/formset.html" with formset=formset fieldsets=fieldsets R90_B_LIST=RETAIL_90_MAIL_RATES_B_LIST R90_G_LIST=RETAIL_90_MAIL_RATES_G_LIST %}
                 </div>
             {% else %}
                 <div class="col">
@@ -72,6 +72,53 @@
             currentIndex += 1;
         }
         
+    })
+
+
+    $(".section-copy").click(function(e){
+        e.preventDefault();
+
+        var index = e.target.dataset.index;
+        var fieldset = closestElem(e.target, 'fieldset');
+
+        var inputs = fieldset.querySelectorAll('input');
+        var selects = fieldset.querySelectorAll('select');
+        
+        var copySection = function(sourceIndex, nodeList, nodesPerRow){
+            /** 
+             * This function copies the value of the specified field to all 
+             * other forms in the formset.
+             * Here, a nodeMatrix is built with N rows and M columns where N is the 
+             * number of fields in the fieldset and M is the number of forms in the 
+             * formset or nodesPerRow.
+             * The value at the chosen index for each row is copied to every other 
+             * field in the same row.
+            **/
+
+            var nodeMatrix = [];
+
+            nodeList = Array.from(nodeList);
+            for (var count = 0; count < nodeList.length / nodesPerRow; count++){
+                // 0 3
+                // 3 6
+                // 6 9
+                nodeMatrix.push(nodeList.slice(count * nodesPerRow, (count + 1) * nodesPerRow));
+            }
+
+            for (var count = 0; count < nodeMatrix.length; count++){
+                var currentItem = nodeMatrix[count];
+                var value = currentItem[index].value;
+
+                for (var i = 0; i < nodesPerRow; i++){
+                    if (i !== index){
+                        currentItem[i].value = value;
+                    }
+                }
+            }
+        }
+
+        copySection(index, inputs, 3);
+        copySection(index, selects, 3);
     })
 
     $('cfd_form :input').change(function(){
