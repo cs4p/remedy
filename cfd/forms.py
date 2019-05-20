@@ -54,7 +54,13 @@ class CFDForm(ModelForm):
                 'fields': ('GUAR_SPC_BR_DCT','GUAR_SPC_GR_DCT','GUAR_SPC_BR_DISP_FEE','GUAR_SPC_GR_DISP_FEE','GUAR_SPC_RETAIL_ADMIN_FEE','GUAR_SPC_SRX_B_DCT','GUAR_SPC_SRX_G_DCT','GUAR_SPC_G_SRX_DISP_FEE','GUAR_SPC_B_SRX_DISP_FEE','GUAR_SPC_SRX_ADMIN_FEE')}),
             ('PBM Client Credits', {
                 'classes': ['collapse'],
-                'fields': ('IE_SSG','IE_ZBD','IE_UAC','IE_GENERICS_UNDER_EXCLUSIVITY','IE_AUTHORIZED_GENERICS','IE_PATENT_LITIGATED_GENERICS','IE_MAC_GENERICS','IE_NON_MAC_GENERICS','IE_MAC_BRANDS','IE_ADJUSTMENTS','IE_COB_SECONDARY_CLAIMS','IE_DMR_CLAIMS','IE_EXCLUDED_PROVIDERS','IE_REJECTS','IE_REVERSALS','IE_SUBROGATION','IE_NON_DRUG_ITEMS','IE_OTC','IE_PRICING_ERROR_THRESHOLDS','IE_DAW_5','IE_COMPOUNDS','M_RATES_APPLY_TO_ALL_M','M_RATE_BREAKOUT','LDD_DISC','LDD_REBATE','BIOSIMILAR_DISC','OBSOLETE_NDCS')})
+                'fields': ('IE_SSG','IE_ZBD','IE_UAC','IE_GENERICS_UNDER_EXCLUSIVITY','IE_AUTHORIZED_GENERICS','IE_PATENT_LITIGATED_GENERICS','IE_MAC_GENERICS','IE_NON_MAC_GENERICS','IE_MAC_BRANDS','IE_ADJUSTMENTS','IE_COB_SECONDARY_CLAIMS','IE_DMR_CLAIMS','IE_EXCLUDED_PROVIDERS','IE_REJECTS','IE_REVERSALS','IE_SUBROGATION','IE_NON_DRUG_ITEMS','IE_OTC','IE_PRICING_ERROR_THRESHOLDS','IE_DAW_5','IE_COMPOUNDS','M_RATES_APPLY_TO_ALL_M','M_RATE_BREAKOUT','LDD_DISC','LDD_REBATE','BIOSIMILAR_DISC','OBSOLETE_NDCS')}),
+            ('Other', {
+                'classes' : ['collapse'],
+                'fields' : ('CONTRACT_TYPE', 'GUAR_MAIL_REBATE', 'GUAR_R90_REBATE', 'GUAR_SPC_M_REBATE', 'GUAR_SPC_R_REBATE', 'RETAIL_90_MAIL_RATES_B', 'RETAIL_90_MAIL_RATES_B_DS',
+                'RETAIL_90_MAIL_RATES_G', 'RETAIL_90_MAIL_RATES_G_DS', 'RETAIL_REBATE_TYPE', 'RETAIL_SPC_REBATE_TYPE', 'MAIL_REBATE_TYPE', 'MAIL_SPC_REBATE_TYPE', 'R90_REBATE_TYPE'
+                )
+            })
             )
 
     def clean(self):
@@ -63,16 +69,23 @@ class CFDForm(ModelForm):
         end_date = cleaned_data.get("END_DATE")
 
         if start_date and end_date:
-            # Only do something if both fields are valid so far.
-            raise forms.ValidationError(
+            # Only do something if both fields are valid so far.            
+            if start_date >= end_date:
+                raise forms.ValidationError(
                 "The Contract Start Date must be earlier than the Contract End Date."
             )
-            if start_date > end_date:
-                pass
 
     def set_initial_values(self, instance):
         for field in self.fields.keys():
             self.fields[field].initial = getattr(instance, field)
+
+    def get_changed_fields(self, model_object):
+        changed = {}
+        for field in self.fields.keys():
+            if self.fields[field].initial == getattr(model_object, field):
+                changed[field] = True
+
+        return changed
 
 class CFDSearchForm(forms.Form):
     client_name = forms.CharField(label='', max_length=255,
