@@ -36,30 +36,29 @@
                 h2.appendChild(document.createTextNode(' ('));
                 h2.appendChild(link);
                 h2.appendChild(document.createTextNode(')'));
+
+                
+                h2.addEventListener('click', function(ev){     
+                    this.querySelector('a').click()                              
+                 });
             }
         }
         // Add toggle to anchor tag
         var toggles = document.querySelectorAll('fieldset.collapse a.collapse-toggle');
-        var toggleFunc = function(ev) {
+        var toggleFunc = function(ev) {            
             ev.preventDefault();
             var fieldset = closestElem(this, 'fieldset');
-            var fieldsets = document.getElementsByClassName(fieldset.classList.value);
-
-            for(var count=0; count < fieldsets.length; count++){
-                fieldset = fieldsets[count];                
-                if (fieldset.classList.contains('collapsed')) {
-                    // Show
-                    this.textContent = gettext('Hide');
-                    fieldset.classList.remove('collapsed');
-                    count -= 1;
-                } else {
-                    // Hide
-                    this.textContent = gettext('Show');
-                    fieldset.classList.add('collapsed');
-                }
+            if (fieldset.classList.contains('collapsed')) {
+                // Show
+                this.textContent = gettext('Hide');
+                fieldset.classList.remove('collapsed');
+            } else {
+                // Hide
+                this.textContent = gettext('Show');
+                fieldset.classList.add('collapsed');
             }
             
-            
+            ev.stopPropagation()
         };
         for (i = 0; i < toggles.length; i++) {
             toggles[i].addEventListener('click', toggleFunc);
