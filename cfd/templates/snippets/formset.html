@@ -8,7 +8,13 @@
         </h2>
 
         {% for field in fieldset.1.fields %}
-            <div class="row form-row fieldWrapper">
+            {% if field in R90_B_LIST %}
+                <div class="row form-row RETAIL_90_MAIL_RATES_B_FIELD fieldWrapper">
+            {% elif field in R90_G_LIST %}
+                <div class="row form-row RETAIL_90_MAIL_RATES_G_FIELD fieldWrapper">
+            {% else %}        
+                <div class="row form-row fieldWrapper">
+            {% endif %}
             {% for form in formset %}
 
                 {% with field=form|get_field_data:field errors=formset.errors|get_index:forloop.counter0 data=formset|get_form_metadata:forloop.counter0 %}
@@ -19,7 +25,16 @@
                         </div>
                     {% endif %}
 
-                    <div class="col input-col">
+                    <div class="col input-col">                        
+                            <div class="section-copy-container">
+                                {% if forloop.parentloop.counter0 == 0 and not data.last %}
+                                <a class="section-copy" href="#" data-index="{{data.index}}">
+                                    Copy Section
+                                    <span class="oi oi-chevron-right"></span>
+                                </a>
+                                {% endif %}
+                            </div>                        
+
                         {{ field.field }}                  
                         
                         {% if not data.last %}
