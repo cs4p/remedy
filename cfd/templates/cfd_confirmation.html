@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% load filters %}
+{% load static %}
+
+{% block main %}
+     <form  method="post" id="cfd_form">{% csrf_token %}
+         <div class="row">
+            {% if formset %}
+                {{ formset.management_form }}
+                {% for form in formset %}
+                
+                    <div class="col">
+                         {% if forloop.counter > 1 and forloop.counter != formset|length %}
+                            {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets changes=changed confirmation=True index=forloop.counter0 extra=True %}
+                         {% elif forloop.counter > 1 and forloop.counter == formset|length %}
+                            {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets changes=changed confirmation=True index=forloop.counter0 extra=True last=True%}
+                         {% else %}
+                            {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets changes=changed confirmation=True index=forloop.counter0 %}
+                         {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col">
+                    {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets changes=changed confirmation=True index=0 last=True %}
+                </div>
+            {% endif %}           
+         </div>
+
+         
+            
+       <input class="btn btn-primary" type="submit" value="Save" />
+    </form>
+
+ {% endblock %}
+
+{% block scripts %}
+
+<script src="{% static '/admin/js/vendor/jquery/jquery.js' %}"></script>
+<script src="{% static '/admin/js/jquery.init.js' %}"></script>
+<script src="{% static '/admin/js/core.js' %}"></script>
+<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+<script src="{% static '/js/collapse.js' %}"></script>
+
+{% endblock %}
