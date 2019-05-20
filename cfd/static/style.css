@@ -103,8 +103,8 @@ fieldset >h2 {
     height: 30px;
 }
 
-fieldset >h2.blank {
-    background: none;
+fieldset >h2:hover{
+    cursor: pointer;
 }
 
 fieldset.collapsed {    
@@ -138,8 +138,13 @@ fieldset .input-col {
 }
 
 fieldset .input-copy {
-    display: block;
-    height: 20px;
+    display: inline-block;    
+    vertical-align: middle;
+    padding-left: 15px;
+}
+
+fieldset .fieldset-field-changed {
+    color: green;
 }
 
 .search-bar {
