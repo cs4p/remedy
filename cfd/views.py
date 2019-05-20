@@ -58,7 +58,9 @@ def cfd_create(request, template_name='cfd_form.html'):
         formset = CFDFormset(request.POST)
         
         if formset.is_valid():
-            formset.save()
+            for form in formset:
+                form.save()
+
             return redirect('cfd:cfd_list')
         else:
             context['formset'] = formset
@@ -77,18 +79,25 @@ def cfd_update(request, pk, template_name='cfd_form.html'):
 
     if request.method == "POST":        
         formset = CFDFormset(request.POST)
+        if formset.is_valid():            
+            return cfd_confirmation(request, formset, update=True)
+        else:
+            context = {    
+                'formset' : formset,
+                'fieldsets' : f.CFDForm.Meta.fieldsets,
+                "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST,
+                "RETAIL_90_MAIL_RATES_G_LIST": RETAIL_90_MAIL_RATES_G_LIST
+            }
 
-        if formset.is_valid():
-            formset.save()
-            return redirect('cfd:cfd_list')
-    
+            return render(request, template_name, context)
+
     record_year1, record_year2 = record.get_subsequent_contracts(2)
 
     formset = CFDFormset()
     formset[0].set_initial_values(record)
     formset[1].set_initial_values(record_year1)
     formset[2].set_initial_values(record_year2)
-    
+
     context = {    
         'formset' : formset,
         'fieldsets' : f.CFDForm.Meta.fieldsets,
@@ -97,6 +106,30 @@ def cfd_update(request, pk, template_name='cfd_form.html'):
     }
     
     return render(request, template_name, context)
+
+@login_required
+def cfd_confirmation(request, formset, update=False, template_name='cfd_confirmation.html'):
+    CFDFormset = formset_factory(f.CFDForm, extra=3)
+
+    if request.method == "POST":    
+        print(formset[0].instance)    
+        formset = CFDFormset(request.POST)
+
+        if formset.is_valid():
+            for form in formset:
+                form.save()
+
+            return redirect('cfd:cfd_list')
+    
+    print(formset)
+    context = {    
+        'formset' : formset,
+        'fieldsets' : f.CFDForm.Meta.fieldsets,
+        'confirmation' : True
+    }
+    
+    return render(request, template_name, context)
+
 
 @login_required
 def cfd_delete(request, pk, template_name='cfd_delete.html'):
