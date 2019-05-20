@@ -65,21 +65,27 @@
             toggles[i].addEventListener('click', toggleFunc);
         }
 
-        var fieldErrors = document.getElementsByClassName('fieldset-input-error');
-        for (var count = 0; count < fieldErrors.length; count++){
-            var fieldset = closestElem(fieldErrors[0], 'fieldset'); 
-            fieldset = document.getElementsByClassName(fieldset.classList.value)[0];
-
-            if (fieldset.classList.contains('collapsed')){ 
-
-                var header = fieldset.querySelector('h2');
-                if (!header.classList.contains('blank')){
-                    header.querySelector('a').click();
-                }         
-                       
+        var showParentFieldset = function(elemList){
+            for (var count = 0; count < elemList.length; count++){
+                var fieldset = closestElem(elemList[count], 'fieldset'); 
+                fieldset = document.getElementsByClassName(fieldset.classList.value)[0];
+    
+                if (fieldset.classList.contains('collapsed')){ 
+    
+                    var header = fieldset.querySelector('h2');
+                    if (!header.classList.contains('blank')){
+                        header.querySelector('a').click();
+                    }         
+                           
+                }
+                
             }
-
-            
         }
+        
+        var fieldErrors = document.getElementsByClassName('fieldset-input-error');
+        var changedFields = document.getElementsByClassName('fieldset-field-changed');
+        
+        showParentFieldset(fieldErrors);
+        showParentFieldset(changedFields);
     });
 })();
