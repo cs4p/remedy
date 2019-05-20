@@ -3,8 +3,6 @@
 {% block main %}
     <div class="container">
         <h1>Client Financial Data</h1>
-        <h2><a href="{% url "cfd:cfd_new_multi" %}">See a sample of a multi year form</a></h2>
-
         <div class="search-bar">
           <form method="POST"> {% csrf_token %}
             {{ form }}
