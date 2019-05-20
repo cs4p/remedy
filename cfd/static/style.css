@@ -95,6 +95,11 @@ fieldset .form-row {
 fieldset .form-row >div{
     margin: auto;
 }
+
+fieldset .form-row label{ 
+    margin-bottom: 0;
+}
+
 fieldset.collapsed h2, fieldset.collapsed {
     display: block;
 }
@@ -145,6 +150,11 @@ fieldset .input-copy {
 
 fieldset .fieldset-field-changed {
     color: green;
+}
+
+fieldset .section-copy-container { 
+    min-height: 25px;
+    margin: 2.5px 0;
 }
 
 .search-bar {
