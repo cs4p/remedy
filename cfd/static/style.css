@@ -150,6 +150,7 @@ fieldset .input-copy {
 
 fieldset .fieldset-field-changed {
     color: green;
+    font-weight: bold;
 }
 
 fieldset .section-copy-container { 
