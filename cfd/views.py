@@ -50,8 +50,8 @@ def cfd_create(request, template_name='cfd_form.html'):
     context = {        
         'formset' : None,
         'fieldsets' : f.CFDForm.Meta.fieldsets,
-        "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST,
-        "RETAIL_90_MAIL_RATES_G_LIST": RETAIL_90_MAIL_RATES_G_LIST
+        'RETAIL_90_MAIL_RATES_B_LIST': RETAIL_90_MAIL_RATES_B_LIST,
+        'RETAIL_90_MAIL_RATES_G_LIST': RETAIL_90_MAIL_RATES_G_LIST
     }    
 
     if request.method == "POST":        
@@ -76,17 +76,21 @@ def cfd_create(request, template_name='cfd_form.html'):
 def cfd_update(request, pk, template_name='cfd_form.html'):
     record = get_object_or_404(cfd, pk=pk)
     CFDFormset = formset_factory(f.CFDForm, extra=3)
-
+    
     if request.method == "POST":        
-        formset = CFDFormset(request.POST)
+        formset = CFDFormset(request.POST)        
+
+        confirmed = request.POST.get('confirmed', False)
+        confirmed = confirmed == "True"
+
         if formset.is_valid():            
-            return cfd_confirmation(request, formset, update=True)
+            return cfd_confirmation(request, pk, formset, confirmed)
         else:
             context = {    
                 'formset' : formset,
                 'fieldsets' : f.CFDForm.Meta.fieldsets,
-                "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST,
-                "RETAIL_90_MAIL_RATES_G_LIST": RETAIL_90_MAIL_RATES_G_LIST
+                'RETAIL_90_MAIL_RATES_B_LIST': RETAIL_90_MAIL_RATES_B_LIST,
+                'RETAIL_90_MAIL_RATES_G_LIST': RETAIL_90_MAIL_RATES_G_LIST
             }
 
             return render(request, template_name, context)
@@ -101,34 +105,41 @@ def cfd_update(request, pk, template_name='cfd_form.html'):
     context = {    
         'formset' : formset,
         'fieldsets' : f.CFDForm.Meta.fieldsets,
-        "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST,
-        "RETAIL_90_MAIL_RATES_G_LIST": RETAIL_90_MAIL_RATES_G_LIST
+        'RETAIL_90_MAIL_RATES_B_LIST': RETAIL_90_MAIL_RATES_B_LIST,
+        'RETAIL_90_MAIL_RATES_G_LIST': RETAIL_90_MAIL_RATES_G_LIST
     }
     
     return render(request, template_name, context)
 
 @login_required
-def cfd_confirmation(request, formset, update=False, template_name='cfd_confirmation.html'):
-    CFDFormset = formset_factory(f.CFDForm, extra=3)
+def cfd_confirmation(request, pk, formset, confirmed, template_name='cfd_confirmation.html'):
+    CFDFormset = formset_factory(f.CFDForm, formset=f.CFDFormset, extra=3)
 
     if request.method == "POST":    
-        print(formset[0].instance)    
         formset = CFDFormset(request.POST)
+        if confirmed:                     
+            if formset.is_valid():
+                formset.save(pk)
 
-        if formset.is_valid():
-            for form in formset:
-                form.save()
+                return redirect('cfd:cfd_list')
+            else:
+                context = {    
+                    'formset' : formset,
+                    'fieldsets' : f.CFDForm.Meta.fieldsets,
+                    'RETAIL_90_MAIL_RATES_B_LIST': RETAIL_90_MAIL_RATES_B_LIST,
+                    'RETAIL_90_MAIL_RATES_G_LIST': RETAIL_90_MAIL_RATES_G_LIST
+                }
 
-            return redirect('cfd:cfd_list')
-    
-    print(formset)
-    context = {    
-        'formset' : formset,
-        'fieldsets' : f.CFDForm.Meta.fieldsets,
-        'confirmation' : True
-    }
-    
-    return render(request, template_name, context)
+                return render(request, "cfd_form.html", context)
+        else:
+            context = {    
+                'formset' : formset,
+                'fieldsets' : f.CFDForm.Meta.fieldsets,
+                'confirmation' : True,
+                'changed' : formset.get_changed_fields(parent_pk=pk)
+            }
+
+            return render(request, template_name, context)
 
 
 @login_required
@@ -147,8 +158,8 @@ def cfd_copy(request, pk, template_name="cfd_form.html"):
     if form.is_valid():
         form.save()
         return redirect('cfd:cfd_list')
-    return render(request, template_name, {'form': form, "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST,
-                                           "RETAIL_90_MAIL_RATES_G_LIST": RETAIL_90_MAIL_RATES_G_LIST})
+    return render(request, template_name, {'form': form, 'RETAIL_90_MAIL_RATES_B_LIST': RETAIL_90_MAIL_RATES_B_LIST,
+                                           'RETAIL_90_MAIL_RATES_G_LIST': RETAIL_90_MAIL_RATES_G_LIST})
 
 @login_required
 def cfd_create_mutiple(request, template_name="cfd_new_multi.html"):
@@ -161,6 +172,6 @@ def cfd_create_mutiple(request, template_name="cfd_new_multi.html"):
         if response.is_valid():
             response.save()
         return redirect('cfd:cfd_list')
-    return render(request, template_name, {'formset': CFDFormSet, 'form': form, "RETAIL_90_MAIL_RATES_B_LIST": RETAIL_90_MAIL_RATES_B_LIST,
-                                           "RETAIL_90_MAIL_RATES_G_LIST": RETAIL_90_MAIL_RATES_G_LIST})
+    return render(request, template_name, {'formset': CFDFormSet, 'form': form, 'RETAIL_90_MAIL_RATES_B_LIST': RETAIL_90_MAIL_RATES_B_LIST,
+                                           'RETAIL_90_MAIL_RATES_G_LIST': RETAIL_90_MAIL_RATES_G_LIST})
 
