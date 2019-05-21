@@ -74,6 +74,13 @@ class CFDForm(ModelForm):
                 raise forms.ValidationError(
                 "The Contract Start Date must be earlier than the Contract End Date."
             )
+        
+        return cleaned_data
+
+    def set_instance_values(self, instance):
+        for field in self.fields.keys():
+            value = self.cleaned_data.get(field)
+            setattr(instance, field, value)         
 
     def set_initial_values(self, instance):
         for field in self.fields.keys():
@@ -82,10 +89,45 @@ class CFDForm(ModelForm):
     def get_changed_fields(self, model_object):
         changed = {}
         for field in self.fields.keys():
-            if self.fields[field].initial == getattr(model_object, field):
+            if self.fields[field].initial != getattr(model_object, field):
                 changed[field] = True
 
         return changed
+
+class CFDFormset(forms.BaseFormSet):
+
+    def save(self, parent_pk):
+
+        record = m.cfd.objects.get(pk=parent_pk)
+        formset_length = len(self)
+
+        records = [record]
+        records.extend(record.get_subsequent_contracts(formset_length - 1))
+
+        for index, item in enumerate(self.forms):        
+            if item.is_valid():
+                current_record = records[index]
+
+                item.set_instance_values(current_record)
+                current_record.save()   
+                
+
+    def get_changed_fields(self, parent_pk, records=None):
+    
+        record = m.cfd.objects.get(pk=parent_pk)
+        formset_length = len(self.forms)
+
+        records = [record]
+        records.extend(record.get_subsequent_contracts(formset_length - 1))
+        
+        changed = []
+
+        for index, item in enumerate(records):
+            changed.append(self.forms[index].get_changed_fields(item))
+        
+        return changed
+        
+        
 
 class CFDSearchForm(forms.Form):
     client_name = forms.CharField(label='', max_length=255,
