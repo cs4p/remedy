@@ -18,9 +18,35 @@
             {% endif %}           
          </div>
 
-         
+        {% if create %}
+        <button type="button" class="btn btn-primary modal-btn" data-toggle="modal" data-target="#myModal">
+            Save
+        </button>
+              
+        <div class="modal" id="myModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                          
+                <div class="modal-header">
+                    <h4 class="modal-title">Confirm Form Submission</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
             
-       <input class="btn btn-primary" type="submit" value="Save" />
+                <div class="modal-body">
+                    Confirm your changes and submit.
+                </div>
+            
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <input id="submit" class="btn btn-primary" type="submit" value="Save" />
+                </div>
+            
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <input id="submit" class="btn btn-primary" type="submit" value="Save" />
+       {% endif %}
     </form>
 
  {% endblock %}
@@ -32,6 +58,8 @@
 <script src="{% static '/admin/js/core.js' %}"></script>
 <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
 <script src="{% static '/js/collapse.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
 <script>
 
@@ -121,9 +149,7 @@
         copySection(index, selects, 3);
     })
 
-    $('cfd_form :input').change(function(){
-        alert("Form changed");
-    });
 
 </script>
+
 {% endblock %}
