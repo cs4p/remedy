@@ -194,9 +194,12 @@ class cfd(models.Model):
         return contracts
 
     @classmethod
-    def search(cls, client_name=None, start_date=None, end_date=None):
-        contracts = cls.objects.filter(IS_TEMPLATE=False)
+    def search(cls, is_template=None, client_name=None, start_date=None, end_date=None):
+        contracts = cls.objects.filter()
 
+        if is_template:
+            contracts = cls.objects.filter(IS_TEMPLATE=is_template)
+            
         if client_name:
             contracts = contracts.filter(CLIENT__CLIENT_NAME__icontains=client_name)
 
