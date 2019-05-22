@@ -2,7 +2,7 @@
 
 <div>
 {% for fieldset in fieldsets %}
-    <fieldset class="module aligned collapse collapsed {{forloop.counter}}-{{fieldset.0}}">       
+    <fieldset class="module aligned {{fieldset.1.classes|join:' '}} collapsed {{forloop.counter}}-{{fieldset.0}}">       
         <h2> 
             {{ fieldset.0 }} 
         </h2>
