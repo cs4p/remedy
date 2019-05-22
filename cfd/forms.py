@@ -32,9 +32,11 @@ class CFDForm(ModelForm):
         }
         fieldsets = (
             ('Client Information', {
+                'classes': ['collapse'],
                 'fields': ('CLIENT',)
             }),
-            ('Timing', {
+            ('Contract Period', {
+                'classes': ['collapse'],
                 'fields': ('START_DATE', 'END_DATE')
             }),
             ('Retail', {
