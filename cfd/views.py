@@ -18,9 +18,13 @@ def cfd_list(request, template_name='cfd_list.html'):
 
         if form.is_valid():
             records = cfd.search(**form.cleaned_data)
+            client_data = records.filter(IS_TEMPLATE=False)
+            templates = records.filter(IS_TEMPLATE=True)
+
             context = {
                 'form' : form,
-                'object_list' : records
+                'object_list' : client_data,
+                'templates' : templates
             }
 
             return render(request, template_name, context)
@@ -28,10 +32,12 @@ def cfd_list(request, template_name='cfd_list.html'):
 
     form = f.CFDSearchForm()
     records = cfd.objects.filter(IS_TEMPLATE=False)
+    templates = cfd.objects.filter(IS_TEMPLATE=True)
     
     context = {
         'form' : form,
-        'object_list' : records
+        'object_list' : records,
+        'templates' : templates
     }
       
     return render(request, template_name, context)
@@ -159,8 +165,15 @@ def cfd_copy(request, pk, template_name="cfd_form.html"):
     if form.is_valid():
         form.save()
         return redirect('cfd:cfd_list')
-    return render(request, template_name, {'form': form, 'RETAIL_90_MAIL_RATES_B_LIST': RETAIL_90_MAIL_RATES_B_LIST,
-                                           'RETAIL_90_MAIL_RATES_G_LIST': RETAIL_90_MAIL_RATES_G_LIST})
+    
+    context = {
+        'form': form, 
+        'fieldsets' : form.Meta.fieldsets,
+        'RETAIL_90_MAIL_RATES_B_LIST': RETAIL_90_MAIL_RATES_B_LIST,
+        'RETAIL_90_MAIL_RATES_G_LIST': RETAIL_90_MAIL_RATES_G_LIST
+        }
+
+    return render(request, template_name, context)
 
 @login_required
 def cfd_create_mutiple(request, template_name="cfd_new_multi.html"):
