@@ -20,6 +20,12 @@ class CFDFormPreview(FormPreview):
 class CFDForm(ModelForm):
     logger = logging.getLogger('django.server')
 
+    def __init__(self, *args, **kwargs):        
+        super().__init__(*args, **kwargs)
+        for field in self.fields.keys():
+            if "Discount" in self.fields[field].label:
+                self.fields[field].widget.attrs.update({ 'class' : 'discount-field' })                
+
     class Meta:
         model = m.cfd
         fields = '__all__'
