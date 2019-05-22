@@ -178,7 +178,7 @@ class cfd(models.Model):
         This function gets the specified number of subsequent contracts.
         If no contracts are found, new ones are instantiated.
         '''
-        contracts = cfd.objects.filter(CLIENT=self.CLIENT, START_DATE__year__gt=self.START_DATE.year).order_by('START_DATE')[:number_of_contracts]
+        contracts = cfd.objects.filter(CLIENT=self.CLIENT, START_DATE__year__gt=self.START_DATE.year, IS_TEMPLATE=False).order_by('START_DATE')[:number_of_contracts]
         contracts = list(contracts)
 
         if len(contracts) < number_of_contracts:
@@ -201,7 +201,7 @@ class cfd(models.Model):
             contracts = contracts.filter(CLIENT__CLIENT_NAME__icontains=client_name)
 
         if start_date:
-            contracts = contracts.filter(START_DATE__gte=start_date)
+            contracts = contracts.filter(END_DATE__gte=start_date)
 
         if end_date:
             contracts = contracts.filter(START_DATE__lte=end_date)
