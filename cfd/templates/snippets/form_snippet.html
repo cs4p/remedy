@@ -23,39 +23,46 @@
                     <div class="row form-row fieldWrapper"> <!-- no match in loop, normal row -->
                 {% endif %}
                         <div class="col-3">{{ field.label_tag }}</div>
-                        <div class="col-9 input-col">
-                            {{ field.field }}
-                            {% if not last %}
-                                <a class="input-copy" href="#" data-target="{{field.field.id_for_label}}" data-index="{{index}}">
-                                    (Copy Right)
-                                </a>
+
+                        {% if confirmation %}
+                            {% if changes|get_key:field.name %}
+                                <div class="col-9 input-col fieldset-field-changed">
                             {% else %}
-                                <div class="input-copy"></div>
-                            {% endif %}
-
-                            {% if field.help_text %}
-                                <div class="help">{{ field.help_text|safe }}</div>
-                            {% endif %}
-                            
-
-                            <div class="error-container">
-                                {% if errors %}
-                                
-                                    {% with error=errors|get_key:field.name %}
-
-                                        {% if error %}
-                                            <div class="error fieldset-input-error">
-                                                {{ error }}
-                                            </div>
-                                        {% endif %}
-
-                                    {% endwith %}
-
+                                <div class="col-9 input-col">
+                            {% endif %}                            
+                                {{ field.field.value|default_if_none:"" }}
+                                {% if field.help_text %}
+                                    <div class="help">{{ field.help_text|safe }}</div>
+                                {% endif %}
+                            </div>                            
+                        {% else %}
+                            <div class="col-9 input-col">
+                                {{ field.field }}
+                               
+                                {% if field.help_text %}
+                                    <div class="help">{{ field.help_text|safe }}</div>
                                 {% endif %}
                                 
-                            </div>
-                            
-                        </div>                                                
+    
+                                <div class="error-container">
+                                    {% if errors %}
+                                        
+                                        {% with error=errors|get_key:field.name %}
+    
+                                            {% if error %}
+                                                <div class="error fieldset-input-error">
+                                                    {{ error }}
+                                                </div>
+                                            {% endif %}
+    
+                                        {% endwith %}
+    
+                                    {% endif %}
+                                    
+                                </div>
+                                
+                            </div>    
+                        {% endif%}                                                                    
                     </div>                
             {% endwith %}  
 
