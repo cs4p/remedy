@@ -5,23 +5,58 @@
         <h1>Client Financial Data</h1>
         <div class="search-bar">
           <form method="POST"> {% csrf_token %}
-            {{ form }}
-
-            <input class="search-btn" type="submit" value="Search" />
+            <!-- {{ form }} -->
+            <div class="row">
+              {% for field in form %}
+                <div class="col search-field-col">
+                  {{ field }}
+                </div>
+              {% endfor %}
+              <div class="col search-field-col">
+                <input class="search-btn" type="submit" value="Search" />
+              </div>
+            </div>            
           </form>
         </div>        
+        
+        <div id="new-button-container">
+          <a href="{% url "cfd:cfd_new" %}">
+            <button class="btn btn-primary cfd-btn new-form-btn">
+                <span class="oi oi-plus"></span> New Client Financial Data entry
+            </button>
+          </a>
+          <a href="{% url "cfd:template_list" %}">
+            <button class="btn btn-primary cfd-btn new-form-btn">
+                <span class="oi oi-plus"></span> New Client Financial Data entry from template
+            </button>
+          </a>
+        </div>
 
-        <table>
-          {% for r in object_list %}
-          <tr><td><a href="{% url "cfd:cfd_edit" r.id %}">{{ r.CLIENT }}: {{ r.START_DATE }} - {{ r.END_DATE }}</a></td>
-          <td><a href="{% url "cfd:cfd_copy" r.id %}">Copy</a></td>
-          <td><a href="{% url "cfd:cfd_delete" r.id %}">Delete</a></td>
-          </tr>
-          {% endfor %}
-        </table>
-<p/><p/>
-        <a href="{% url "cfd:cfd_new" %}">New Client Financial Data entry</a> |
-        <a href="{% url "cfd:template_list" %}">New Client Financial Data entry from template</a>
+        <div class="cfd-section">
+          <h2>Client Data</h2>
+          <table class="cfd-list">
+            {% for r in object_list %}
+            <tr><td><a href="{% url "cfd:cfd_edit" r.id %}">{{ r.CLIENT }}: {{ r.START_DATE }} - {{ r.END_DATE }}</a></td>
+            <td><a href="{% url "cfd:cfd_copy" r.id %}">Copy</a></td>
+            <td><a href="{% url "cfd:cfd_delete" r.id %}">Delete</a></td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+
+        <div class="cfd-section">
+          <h2>Templates</h2>
+          <table class="cfd-list">
+            {% for r in templates %}
+            <tr><td width=255><a href="{% url "cfd:cfd_edit" r.id %}">{{ r.CONTRACT_DESCRIPTION }}</a></td>
+            <td><a href="{% url "cfd:cfd_copy" r.id %}">Create New From Template</a></td>
+            <td><a href="{% url "cfd:cfd_delete" r.id %}">Delete</a></td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+
+
     </div>
 {% endblock %}
 
