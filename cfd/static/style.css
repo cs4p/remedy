@@ -179,3 +179,8 @@ input.search-btn {
 
     font-size: 14px;
 }
+
+.modal-btn {
+    background: #609ab6;
+    border-color: #609ab6;
+}
