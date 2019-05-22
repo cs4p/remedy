@@ -51,7 +51,8 @@ def cfd_create(request, template_name='cfd_form.html'):
         'formset' : None,
         'fieldsets' : f.CFDForm.Meta.fieldsets,
         'RETAIL_90_MAIL_RATES_B_LIST': RETAIL_90_MAIL_RATES_B_LIST,
-        'RETAIL_90_MAIL_RATES_G_LIST': RETAIL_90_MAIL_RATES_G_LIST
+        'RETAIL_90_MAIL_RATES_G_LIST': RETAIL_90_MAIL_RATES_G_LIST,
+        'create' : True
     }    
 
     if request.method == "POST":        
