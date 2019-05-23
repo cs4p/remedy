@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from django.forms.widgets import DateInput, SelectMultiple
+from django.forms.widgets import DateInput, HiddenInput, SelectMultiple
 import logging
 #added for form preview
 from django.http import HttpResponseRedirect
@@ -35,6 +35,7 @@ class CFDForm(ModelForm):
             'START_DATE': DateInput(attrs={'class': 'datepicker'}),
             'END_DATE': DateInput(attrs={'class': 'datepicker'}),
             # 'NON_SPC_CLASSES': forms.SelectMultiple(choices=DROP_DOWN_MENU_41),
+            'confirmed' : HiddenInput(attrs={ 'class' : 'confirmation_flag' })
         }
         fieldsets = (
             ('Client Information', {
@@ -66,7 +67,8 @@ class CFDForm(ModelForm):
             ('Other', {
                 'classes' : ['collapse'],
                 'fields' : ('CONTRACT_TYPE', 'GUAR_MAIL_REBATE', 'GUAR_R90_REBATE', 'GUAR_SPC_M_REBATE', 'GUAR_SPC_R_REBATE', 'RETAIL_90_MAIL_RATES_B', 'RETAIL_90_MAIL_RATES_B_DS',
-                'RETAIL_90_MAIL_RATES_G', 'RETAIL_90_MAIL_RATES_G_DS', 'RETAIL_REBATE_TYPE', 'RETAIL_SPC_REBATE_TYPE', 'MAIL_REBATE_TYPE', 'MAIL_SPC_REBATE_TYPE', 'R90_REBATE_TYPE'
+                'RETAIL_90_MAIL_RATES_G', 'RETAIL_90_MAIL_RATES_G_DS', 'RETAIL_REBATE_TYPE', 'RETAIL_SPC_REBATE_TYPE', 'MAIL_REBATE_TYPE', 'MAIL_SPC_REBATE_TYPE', 'R90_REBATE_TYPE',
+                'confirmed'
                 )
             })
             )
