@@ -172,7 +172,8 @@ class cfd(models.Model):
     OBSOLETE_NDCS = models.CharField('Obsolete NDCs',max_length=50,choices=DROP_DOWN_MENU_24_CHOICES, default="TDB")
     R90_REBATE_TYPE = models.CharField('Retail 90 Rebate Type',max_length=15,choices=DROP_DOWN_MENU_42, default="TBD")
     IS_TEMPLATE = models.BooleanField("Template?",default=False)
-
+    confirmed = models.BooleanField(default=True)
+    
     def get_subsequent_contracts(self, number_of_contracts):
         '''
         This function gets the specified number of subsequent contracts.
