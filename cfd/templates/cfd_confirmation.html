@@ -5,7 +5,7 @@
 
 {% block main %}
      <form  method="post" id="cfd_form">{% csrf_token %}
-         <input type="hidden" name="confirmed" value="True"/>
+         <input type="hidden" name="is_confirmation_page" value="True"/>
          <div class="row">
             {% if formset %}
                 {{ formset.management_form }}
