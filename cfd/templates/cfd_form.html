@@ -4,6 +4,11 @@
 {% load static %}
 
 {% block main %}
+    <div id="field-search-container">
+        <label id="field-search-label"> Search Fields </label>
+        <input id="field-search" type="text"/>
+    </div>    
+
      <form  method="post" id="cfd_form">{% csrf_token %}
          <div class="row">
             {% if formset %}
@@ -19,33 +24,37 @@
          </div>
 
         {% if create %}
-        <button type="button" class="btn btn-primary cfd-btn" data-toggle="modal" data-target="#myModal">
-            Save
-        </button>
-              
-        <div class="modal" id="myModal">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                          
-                <div class="modal-header">
-                    <h4 class="modal-title">Confirm Form Submission</h4>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-            
-                <div class="modal-body">
-                    Confirm your changes and submit.
-                </div>
-            
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    <input id="submit" class="btn btn-primary" type="submit" value="Save" />
-                </div>
-            
+            <input id="submit" class="btn btn-primary" type="submit" value="Save as Pending" />
+
+            <button type="button" class="btn btn-primary cfd-btn" data-toggle="modal" data-target="#myModal">
+                Save and Submit
+            </button>
+                
+            <div class="modal" id="myModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                            
+                    <div class="modal-header">
+                        <h4 class="modal-title">Confirm Form Submission</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                
+                    <div class="modal-body">
+                        Confirm your changes and submit.
+                    </div>
+                
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        <input id="submit" class="btn btn-primary" type="submit" value="Save" />
+                    </div>
+                
+                    </div>
                 </div>
             </div>
-        </div>
         {% else %}
-        <input id="submit" class="btn btn-primary" type="submit" value="Save" />
+            <input id="submit-pending" class="btn btn-primary" type="submit" value="Save as Pending" />
+
+            <input id="submit" class="btn btn-primary" type="submit" value="Save and Submit" />
        {% endif %}
     </form>
 
@@ -75,6 +84,40 @@
             $(".RETAIL_90_MAIL_RATES_G_FIELD").toggle($("#id_RETAIL_90_MAIL_RATES_G").val() != "N");
             });
     });
+
+    const labels = Array.from(document.getElementById("cfd_form").querySelectorAll("label"));
+    var labelText = [];
+    var labelMap = {};
+
+    for (var count = 0; count < labels.length; count++){
+        const item = labels[count];
+        var text = $(item).text();
+        text = text.slice(0, text.length - 1);
+
+        labelText.push(text);
+        labelMap[text] = item;
+    }
+
+    $("#field-search").autocomplete({
+        source : labelText,
+        select : function(event, ui){
+            const selectedLabel = ui.item.label;
+            const label = labelMap[selectedLabel];
+
+            var fieldset = closestElem(label, 'fieldset'); 
+
+            if (fieldset.classList.contains('collapsed')){ 
+
+                var header = fieldset.querySelector('h2');
+                if (!header.classList.contains('blank')){
+                    header.querySelector('a').click();
+                }         
+                        
+            }
+
+            label.scrollIntoView();
+        }
+    })
 
     $(".discount-field").attr({
         "min" : 0,
@@ -156,7 +199,13 @@
         copySection(index, selects, 3);
     })
 
+    $("#submit-pending").click(function(e){
+        $(".confirmation_flag").val(false);
+    })
 
+    $("#submit").click(function(e){
+        $(".confirmation_flag").val(true);
+    })
 </script>
 
 {% endblock %}
