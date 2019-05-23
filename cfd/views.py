@@ -20,24 +20,28 @@ def cfd_list(request, template_name='cfd_list.html'):
             records = cfd.search(**form.cleaned_data)
             client_data = records.filter(IS_TEMPLATE=False)
             templates = records.filter(IS_TEMPLATE=True)
+            pending = records.filter(confirmed=False)
 
             context = {
                 'form' : form,
                 'object_list' : client_data,
-                'templates' : templates
+                'templates' : templates,
+                'pending' : pending
             }
 
             return render(request, template_name, context)
             
 
     form = f.CFDSearchForm()
-    records = cfd.objects.filter(IS_TEMPLATE=False)
+    records = cfd.objects.filter(IS_TEMPLATE=False, confirmed=True)
     templates = cfd.objects.filter(IS_TEMPLATE=True)
-    
+    pending = cfd.objects.filter(confirmed=False)
+
     context = {
         'form' : form,
         'object_list' : records,
-        'templates' : templates
+        'templates' : templates,
+        'pending' : pending
     }
       
     return render(request, template_name, context)
@@ -87,7 +91,7 @@ def cfd_update(request, pk, template_name='cfd_form.html'):
     if request.method == "POST":        
         formset = CFDFormset(request.POST)        
 
-        confirmed = request.POST.get('confirmed', False)
+        confirmed = request.POST.get('is_confirmation_page', False)
         confirmed = confirmed == "True"
 
         if formset.is_valid():            
