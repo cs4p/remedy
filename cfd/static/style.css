@@ -179,3 +179,47 @@ input.search-btn {
 
     font-size: 14px;
 }
+
+.search-field-col {
+    text-align: center;
+}
+
+.search-field-col > input {
+    width: 100%;
+}
+
+.search-field-col > input[type="submit"] {
+    width: 60%;
+}
+
+.cfd-btn {
+    background: #609ab6;
+    border-color: #609ab6;
+}
+
+#new-button-container {
+    width: 100%;
+    text-align: right;
+}
+
+.new-form-btn {
+    font-size: 14px;    
+    margin-right: 5px;
+    margin-bottom: 10px;
+}
+
+.cfd-list {
+    width: 100%;
+}
+
+.cfd-section {
+    margin-bottom: 15px;
+}
+
+.cfd-section > h2 {
+    background: #79aec8;
+    color: #fff;
+    padding: 8px;
+    font-size: 16px;
+    font-weight: bold;
+}

@@ -2,7 +2,7 @@
 
 <div>
 {% for fieldset in fieldsets %}
-    <fieldset class="module aligned collapse collapsed {{forloop.counter}}-{{fieldset.0}}">       
+    <fieldset class="module aligned {{fieldset.1.classes|join:' '}} collapsed {{forloop.counter}}-{{fieldset.0}}">       
         <h2> 
             {{ fieldset.0 }} 
         </h2>
@@ -46,9 +46,7 @@
                             </div>                        
 
                             {{ field.field }}                  
-                        {{ field.field }}                  
-                            {{ field.field }}                  
-                            
+
                             {% if not data.last %}
 
                                 <a class="input-copy" href="#" data-target="{{field.field.id_for_label}}" data-index="{{data.index}}">
@@ -56,9 +54,7 @@
                                 </a>
                             {% else %}
                                 <div class="input-copy"></div>
-                            {% endif %}                        
-                        {% endif %}                        
-                            {% endif %}                        
+                            {% endif %}                                           
                             
                             <div class="error-container">
                                 {% if errors %}
