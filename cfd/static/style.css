@@ -74,6 +74,10 @@ body {
   	display: table-row-group;
 }
 
+fieldset.hidden {
+    display: none !important;
+}
+
 fieldset.collapse {
     display: block;
 }
