@@ -2,7 +2,7 @@
 
 <div>
 {% for fieldset in fieldsets %}
-    <fieldset class="module aligned {{fieldset.1.classes|join:' '}} collapsed {{forloop.counter}}-{{fieldset.0}}">       
+    <fieldset class="module aligned collapsed {{fieldset.1.classes|join:' '}} {{forloop.counter}}-{{fieldset.0}}">       
         <h2> 
             {{ fieldset.0 }} 
         </h2>
@@ -27,16 +27,14 @@
 
                     <div class="col input-col">       
                         {% if confirmation %}
-                            {% if not field.hidden %}
-                                {% if changes|get_key:field.name %}
-                                    <div class="col-9 input-col fieldset-field-changed">
-                                {% else %}
-                                    <div class="col-9 input-col">
-                                {% endif %}        
-                                    {{ field.field.value|default_if_none:"" }}                                                     
-                                </div>  
-                            {% endif %}       
-                            <input type="hidden" value="{{field.field.value}}" name="{{form.prefix}}-{{field.field.name}}"/>         
+                            {% if changes|get_key:field.name %}
+                                <div class="col-9 input-col fieldset-field-changed">
+                            {% else %}
+                                <div class="col-9 input-col">
+                            {% endif %}                            
+                                {{ field.field.value|default_if_none:"" }}
+                                <input type="hidden" value="{{field.field.value}}" name="{{form.prefix}}-{{field.field.name}}"/>
+                            </div>                  
                         {% else %}
                             <div class="section-copy-container">
                                 {% if forloop.parentloop.counter0 == 0 and not data.last %}
@@ -84,7 +82,6 @@
                         {% endif %}
                     </div>
                     {% endif %}
-                    
                 {% endwith %}  
 
             {% endfor %}
