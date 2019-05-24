@@ -27,14 +27,16 @@
 
                     <div class="col input-col">       
                         {% if confirmation %}
-                            {% if changes|get_key:field.name %}
-                                <div class="col-9 input-col fieldset-field-changed">
-                            {% else %}
-                                <div class="col-9 input-col">
-                            {% endif %}                            
-                                {{ field.field.value|default_if_none:"" }}
-                                <input type="hidden" value="{{field.field.value}}" name="{{form.prefix}}-{{field.field.name}}"/>
-                            </div>                  
+                            {% if not field.hidden %}
+                                {% if changes|get_key:field.name %}
+                                    <div class="col-9 input-col fieldset-field-changed">
+                                {% else %}
+                                    <div class="col-9 input-col">
+                                {% endif %}        
+                                    {{ field.field.value|default_if_none:"" }}                                                     
+                                </div>  
+                            {% endif %}       
+                            <input type="hidden" value="{{field.field.value}}" name="{{form.prefix}}-{{field.field.name}}"/>         
                         {% else %}
                             <div class="section-copy-container">
                                 {% if forloop.parentloop.counter0 == 0 and not data.last %}
@@ -82,6 +84,7 @@
                         {% endif %}
                     </div>
                     {% endif %}
+                    
                 {% endwith %}  
 
             {% endfor %}
