@@ -99,7 +99,7 @@ class CFDForm(ModelForm):
     def get_changed_fields(self, model_object):
         changed = {}
         for field in self.fields.keys():
-            if self.fields[field].initial != getattr(model_object, field):
+            if self.cleaned_data.get(field) != getattr(model_object, field):
                 changed[field] = True
 
         return changed
@@ -131,9 +131,9 @@ class CFDFormset(forms.BaseFormSet):
         records.extend(record.get_subsequent_contracts(formset_length - 1))
         
         changed = []
-
-        for index, item in enumerate(records):
-            changed.append(self.forms[index].get_changed_fields(item))
+        if self.is_valid():
+            for index, item in enumerate(records):
+                changed.append(self.forms[index].get_changed_fields(item))
         
         return changed
         
@@ -146,5 +146,13 @@ class CFDSearchForm(forms.Form):
             'placeholder' : 'Client Name'
         })
     )
-    start_date = forms.DateField(required=False)
-    end_date = forms.DateField(required=False)
+    start_date = forms.DateField(required=False,
+        widget=forms.TextInput(attrs={
+                'placeholder' : 'Start Date'
+            })
+    )
+    end_date = forms.DateField(required=False,
+        widget=forms.TextInput(attrs={
+            'placeholder' : 'End Date'
+        })
+    )
