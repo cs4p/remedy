@@ -67,11 +67,14 @@ class CFDForm(ModelForm):
             ('Other', {
                 'classes' : ['collapse'],
                 'fields' : ('CONTRACT_TYPE', 'GUAR_MAIL_REBATE', 'GUAR_R90_REBATE', 'GUAR_SPC_M_REBATE', 'GUAR_SPC_R_REBATE', 'RETAIL_90_MAIL_RATES_B', 'RETAIL_90_MAIL_RATES_B_DS',
-                'RETAIL_90_MAIL_RATES_G', 'RETAIL_90_MAIL_RATES_G_DS', 'RETAIL_REBATE_TYPE', 'RETAIL_SPC_REBATE_TYPE', 'MAIL_REBATE_TYPE', 'MAIL_SPC_REBATE_TYPE', 'R90_REBATE_TYPE',
-                'confirmed'
+                'RETAIL_90_MAIL_RATES_G', 'RETAIL_90_MAIL_RATES_G_DS', 'RETAIL_REBATE_TYPE', 'RETAIL_SPC_REBATE_TYPE', 'MAIL_REBATE_TYPE', 'MAIL_SPC_REBATE_TYPE', 'R90_REBATE_TYPE',                
                 )
+            }),
+            ('Hidden', {
+                    'classes' : ['hidden'],
+                    'fields' : ('confirmed',)
             })
-            )
+        )
 
     def clean(self):
         cleaned_data = super().clean()
