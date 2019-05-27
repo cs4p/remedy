@@ -1,9 +1,17 @@
-from django.db import models
-from datetime import *; from dateutil.relativedelta import *
-#from django-extras import PercentField
-from multiselectfield import MultiSelectField
-import calendar
 import logging
+import calendar
+from datetime import *
+from dateutil.relativedelta import *
+
+from django.db import models
+from django.contrib.auth import get_user_model
+
+import reversion
+
+from cfd.fields import MultiSelectField
+from cfd.managers import HistoryManager
+
+User = get_user_model()
 
 # Create your models here.
 class client(models.Model):
@@ -14,6 +22,7 @@ class client(models.Model):
     def __str__(self):
             return self.CLIENT_NAME
 
+@reversion.register()
 class cfd(models.Model):
     class Meta:
             verbose_name = 'Client Financial Record'
@@ -173,26 +182,9 @@ class cfd(models.Model):
     R90_REBATE_TYPE = models.CharField('Retail 90 Rebate Type',max_length=15,choices=DROP_DOWN_MENU_42, default="TBD")
     IS_TEMPLATE = models.BooleanField("Template?",default=False)
     confirmed = models.BooleanField(default=True)
-    
-    def get_subsequent_contracts(self, number_of_contracts):
-        '''
-        This function gets the specified number of subsequent contracts.
-        If no contracts are found, new ones are instantiated.
-        '''
-        contracts = cfd.objects.filter(CLIENT=self.CLIENT, START_DATE__year__gt=self.START_DATE.year, IS_TEMPLATE=False).order_by('START_DATE')[:number_of_contracts]
-        contracts = list(contracts)
 
-        if len(contracts) < number_of_contracts:
-            number_of_new_contracts = number_of_contracts - len(contracts)
-            year_gap = len(contracts)
-                        
-            new_contracts = [cfd(CLIENT=self.CLIENT, 
-                            START_DATE=self.START_DATE+relativedelta(years=count + 1 + year_gap), 
-                            END_DATE=self.END_DATE+relativedelta(years=count + 1 + year_gap)) for count in range(number_of_new_contracts)]
-
-            contracts.extend(new_contracts)
-
-        return contracts
+    objects = models.Manager()
+    history = HistoryManager()
 
     @classmethod
     def search(cls, is_template=None, client_name=None, start_date=None, end_date=None):
@@ -212,3 +204,43 @@ class cfd(models.Model):
         
 
         return contracts
+
+    def get_subsequent_contracts(self, number_of_contracts):
+        '''
+        This function gets the specified number of subsequent contracts.
+        If no contracts are found, new ones are instantiated.
+        '''
+        contracts = cfd.objects.filter(CLIENT=self.CLIENT, START_DATE__year__gt=self.START_DATE.year, IS_TEMPLATE=False).order_by('START_DATE')[:number_of_contracts]
+        contracts = list(contracts)
+
+        if len(contracts) < number_of_contracts:
+            number_of_new_contracts = number_of_contracts - len(contracts)
+            year_gap = len(contracts)
+                        
+            new_contracts = [cfd(CLIENT=self.CLIENT, 
+                            START_DATE=self.START_DATE+relativedelta(years=count + 1 + year_gap), 
+                            END_DATE=self.END_DATE+relativedelta(years=count + 1 + year_gap)) for count in range(number_of_new_contracts)]
+
+            contracts.extend(new_contracts)
+
+        return contracts
+    
+    def get_changed_fields(self):
+        if not self.pk:
+            return {}
+        
+        manager = self.__class__._default_manager
+        saved_fields = manager.filter(pk=self.pk).values().get()
+
+        changed_fields = {}
+
+        for field in saved_fields.keys():
+
+            saved_value = saved_fields[field]
+            current_value = getattr(self, field)
+
+            if saved_value != current_value:
+                changed_fields[field] = (saved_value, current_value)
+
+        return changed_fields
+
