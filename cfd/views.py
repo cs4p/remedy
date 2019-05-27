@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
 
+import reversion
+
 import cfd.forms as f
 from cfd.models import cfd
 from cfd.admin import cfdAdmin
@@ -130,7 +132,7 @@ def cfd_confirmation(request, pk, formset, confirmed, template_name='cfd_confirm
         formset = CFDFormset(request.POST)
         if confirmed:                     
             if formset.is_valid():
-                formset.save(pk)
+                formset.save(pk, request.user)
 
                 return redirect('cfd:cfd_list')
             else:
@@ -193,3 +195,29 @@ def cfd_create_mutiple(request, template_name="cfd_new_multi.html"):
     return render(request, template_name, {'formset': CFDFormSet, 'form': form, 'RETAIL_90_MAIL_RATES_B_LIST': RETAIL_90_MAIL_RATES_B_LIST,
                                            'RETAIL_90_MAIL_RATES_G_LIST': RETAIL_90_MAIL_RATES_G_LIST})
 
+
+@login_required
+def cfd_history(request, pk):
+    record = get_object_or_404(cfd, pk=pk)
+    
+    logs = cfd.history.all_record_logs(record)
+
+    context = {
+        'record' : record,
+        'logs' : logs
+    }
+    
+    return render(request, 'cfd_history.html', context)
+
+@login_required
+def cfd_history_detail(request, pk, detail_pk):
+    record = get_object_or_404(cfd, pk=pk)
+    
+    logs = cfd.history.all_record_logs(record)
+
+    context = {
+        'record' : record,
+        'logs' : logs
+    }
+    
+    return render(request, 'recover_form.html', context)
