@@ -213,11 +213,24 @@ def cfd_history(request, pk):
 def cfd_history_detail(request, pk, detail_pk):
     record = get_object_or_404(cfd, pk=pk)
     
-    logs = cfd.history.all_record_logs(record)
+    version = cfd.history.filter_record_logs(record, pk=detail_pk).get()
+    version = version._object_version.object
+
+    form = f.CFDForm(request.POST or None, instance=record)
+
+    if form.is_valid():
+        with reversion.create_revision():                    
+            reversion.set_user(request.user)
+            reversion.set_comment("Reverted to previous version")
+            form.save()
+
+        return redirect('cfd:cfd_list')
 
     context = {
         'record' : record,
-        'logs' : logs
+        'version' : version,
+        'form' : form,
+        'fieldsets' : form.Meta.fieldsets
     }
     
-    return render(request, 'recover_form.html', context)
+    return render(request, 'cfd_recover_form.html', context)
