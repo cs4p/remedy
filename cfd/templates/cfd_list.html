@@ -37,6 +37,7 @@
           <table class="cfd-list">
             {% for r in object_list %}
             <tr><td><a href="{% url "cfd:cfd_edit" r.id %}">{{ r.CLIENT }}: {{ r.START_DATE }} - {{ r.END_DATE }}</a></td>
+            <td><a href="{% url "cfd:cfd_history" r.id %}">History</a></td>
             <td><a href="{% url "cfd:cfd_copy" r.id %}">Copy</a></td>
             <td><a href="{% url "cfd:cfd_delete" r.id %}">Delete</a></td>
             </tr>
@@ -49,6 +50,7 @@
           <table class="cfd-list">
             {% for r in pending %}
             <tr><td><a href="{% url "cfd:cfd_edit" r.id %}">{{ r.CLIENT }}: {{ r.START_DATE }} - {{ r.END_DATE }}</a></td>
+            <td><a href="{% url "cfd:cfd_history" r.id %}">History</a></td>
             <td><a href="{% url "cfd:cfd_copy" r.id %}">Copy</a></td>
             <td><a href="{% url "cfd:cfd_delete" r.id %}">Delete</a></td>
             </tr>
