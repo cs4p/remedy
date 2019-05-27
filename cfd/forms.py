@@ -1,11 +1,12 @@
+import logging
+
 from django.forms import ModelForm
 from django import forms
 from django.forms.widgets import DateInput, HiddenInput, SelectMultiple
-import logging
-#added for form preview
 from django.http import HttpResponseRedirect
+
+import reversion
 from formtools.preview import FormPreview
-#for multiple forms on page
 
 
 import cfd.models as m
@@ -109,20 +110,32 @@ class CFDForm(ModelForm):
 
 class CFDFormset(forms.BaseFormSet):
 
-    def save(self, parent_pk):
+    def save(self, parent_pk, current_user):
 
         record = m.cfd.objects.get(pk=parent_pk)
         formset_length = len(self)
 
         records = [record]
         records.extend(record.get_subsequent_contracts(formset_length - 1))
-
+    
         for index, item in enumerate(self.forms):        
             if item.is_valid():
                 current_record = records[index]
 
                 item.set_instance_values(current_record)
-                current_record.save()   
+                with reversion.create_revision():
+                    
+                    reversion.set_user(current_user)
+
+                    changed_fields = current_record.get_changed_fields()
+                    comments = ""
+                    for field in changed_fields.keys():
+                        old_value, new_value = changed_fields[field]
+                        comments += f"Changed {field} from {old_value} to {new_value};\n"
+
+                    reversion.set_comment(comments)
+
+                    current_record.save()   
                 
 
     def get_changed_fields(self, parent_pk, records=None):
