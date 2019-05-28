@@ -20,7 +20,7 @@ class client(models.Model):
     CLIENT_NAME	= models.CharField('Client Name',max_length=255)
 
     def __str__(self):
-            return self.CLIENT_NAME
+        return self.CLIENT_NAME
 
 @reversion.register()
 class cfd(models.Model):
@@ -188,10 +188,14 @@ class cfd(models.Model):
 
     @classmethod
     def search(cls, is_template=None, client_name=None, start_date=None, end_date=None):
+        '''
+        Gets all contracts which start on or before the given end_date and end on or after the 
+        given start_date and belonging to a client with a CLIENT_NAME close to client_name.
+        '''
         contracts = cls.objects.filter()
 
         if is_template:
-            contracts = cls.objects.filter(IS_TEMPLATE=is_template)
+            contracts = contracts.filter(IS_TEMPLATE=is_template)
             
         if client_name:
             contracts = contracts.filter(CLIENT__CLIENT_NAME__icontains=client_name)
@@ -207,10 +211,10 @@ class cfd(models.Model):
 
     def get_subsequent_contracts(self, number_of_contracts):
         '''
-        This function gets the specified number of subsequent contracts.
+        Gets the specified number of non template subsequent contracts.
         If no contracts are found, new ones are instantiated.
         '''
-        contracts = cfd.objects.filter(CLIENT=self.CLIENT, START_DATE__year__gt=self.START_DATE.year, IS_TEMPLATE=False).order_by('START_DATE')[:number_of_contracts]
+        contracts = cfd.objects.filter(CLIENT=self.CLIENT, START_DATE__gt=self.START_DATE, IS_TEMPLATE=False).order_by('START_DATE')[:number_of_contracts]
         contracts = list(contracts)
 
         if len(contracts) < number_of_contracts:
@@ -226,6 +230,12 @@ class cfd(models.Model):
         return contracts
     
     def get_changed_fields(self):
+        '''
+        Returns a dict with the changed fields
+        as keys and tuples in the format (OLD_VALUE, NEW_VALUE)
+        as the values and an empty dict for new instances
+        or one with no changes
+        '''
         if not self.pk:
             return {}
         
