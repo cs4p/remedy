@@ -29,6 +29,9 @@ def get_key(dictionary, key):
 
 @register.filter
 def get_form_metadata(formset, counter):
+    if counter > len(formset) - 1:
+        raise ValueError
+        
     return {
         'index' : counter,
         'first' : counter == 0,
