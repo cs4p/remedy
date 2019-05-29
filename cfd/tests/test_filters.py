@@ -1,8 +1,4 @@
-from datetime import date
-
-from django.urls import reverse
 from django.test import TestCase
-from django.utils import timezone
 from django.forms import formset_factory
 
 from cfd.forms import CFDForm, CFDFormset
@@ -14,9 +10,23 @@ class FiltersTest(TestCase):
     def setUp(self):
         Formset = formset_factory(CFDForm, formset=CFDFormset, extra=3)
         self.formset = Formset()
+        self.form = CFDForm()
 
     def test_get_field_data(self):
-        pass
+        field = 'CLIENT'
+        
+        field_data = get_field_data(self.form, field)
+        expected_field_data = {
+            'name' : 'CLIENT',
+            'label_tag' : '<label for="id_CLIENT">CLIENT:</label>',
+            'field' : 'CLIENT',
+            'hidden' : False,
+            'help_text' : ''
+        }
+
+        field_data['field']  = field_data['field'].name
+
+        self.assertEqual(field_data, expected_field_data)
 
     def test_get_index(self):
         items = [1,2,3]
