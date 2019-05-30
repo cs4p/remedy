@@ -171,6 +171,10 @@ fieldset .section-copy-container {
     color: #666;
 }
 
+.search-bar .errorlist {
+    background: #f8f8f8;
+}
+
 input.search-btn {
     border: 1px solid #ccc;
     padding: 2px 10px;
