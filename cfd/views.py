@@ -20,7 +20,7 @@ def cfd_list(request, template_name='cfd_list.html'):
 
         if form.is_valid():
             records = cfd.search(**form.cleaned_data)
-            client_data = records.filter(IS_TEMPLATE=False)
+            client_data = records.filter(IS_TEMPLATE=False, confirmed=True)
             templates = records.filter(IS_TEMPLATE=True)
             pending = records.filter(confirmed=False)
 
@@ -32,7 +32,20 @@ def cfd_list(request, template_name='cfd_list.html'):
             }
 
             return render(request, template_name, context)
+        else:        
+            records = cfd.objects.filter(IS_TEMPLATE=False, confirmed=True)
+            templates = cfd.objects.filter(IS_TEMPLATE=True)
+            pending = cfd.objects.filter(confirmed=False)
+
+            context = {
+                'form' : form,
+                'object_list' : records,
+                'templates' : templates,
+                'pending' : pending
+            }
             
+            return render(request, template_name, context)
+
 
     form = f.CFDSearchForm()
     records = cfd.objects.filter(IS_TEMPLATE=False, confirmed=True)
@@ -51,8 +64,9 @@ def cfd_list(request, template_name='cfd_list.html'):
 @login_required
 def template_list(request, template_name='template_list.html'):
     records = cfd.objects.filter(IS_TEMPLATE=True)
-    data = {}
-    data['object_list'] = records
+    data = {
+        'object_list' : records
+    }
     return render(request, template_name, data)
 
 @login_required
