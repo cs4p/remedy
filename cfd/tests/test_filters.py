@@ -34,6 +34,8 @@ class FiltersTest(TestCase):
         for index, item in enumerate(items):
             self.assertEqual(get_index(items, index), item)
 
+        self.assertEqual(get_index(items, 10), None)
+
     def test_get_key(self):
         items = { 'key1' : 1, 'key2' : 2}
 
