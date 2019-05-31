@@ -2,7 +2,7 @@ from datetime import date
 
 from django.urls import reverse
 from django.forms import formset_factory
-from django.test import Client, TestCase
+from django.test import Client, TestCase, RequestFactory
 
 from cfd.models import cfd, client, User
 from cfd.forms import CFDForm, CFDSearchForm
@@ -32,11 +32,13 @@ class CFDListViewTest(TestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/admin/login?next={self.url}")
 
     def test_unauthenticated_post(self):
         response = self.client.post(self.url)
 
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/admin/login?next={self.url}")
 
     def test_get(self):
         self.client.login(username='user', password='pass')
@@ -96,11 +98,13 @@ class TemplateListViewTest(TestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/admin/login?next={self.url}")
 
     def test_unauthenticated_post(self):
         response = self.client.post(self.url)
 
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/admin/login?next={self.url}")
 
     def test_get(self):
         self.client.login(username='user', password='pass')
@@ -138,11 +142,13 @@ class CFDCreateViewTest(TestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/admin/login?next={self.url}")
 
     def test_unauthenticated_post(self):
         response = self.client.post(self.url)
 
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/admin/login?next={self.url}")
 
     def test_get(self):
         self.client.login(username='user', password='pass')
@@ -236,7 +242,6 @@ class CFDCreateViewTest(TestCase):
 class CFDUpdateViewTest(TestCase):
     def setUp(self):
         
-
         self.client = Client()
 
         self.user = User.objects.create(username='user', is_superuser=True)
@@ -256,11 +261,13 @@ class CFDUpdateViewTest(TestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/admin/login?next={self.url}")
 
     def test_unauthenticated_post(self):
         response = self.client.post(self.url)
 
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/admin/login?next={self.url}")
 
     def test_get(self):
         self.client.login(username='user', password='pass')
@@ -301,18 +308,135 @@ class CFDUpdateViewTest(TestCase):
         }
 
         form_data = {
-            'form-0-start_date' : '2019-10-18',
-            'form-0-end_date' : '2019-10-30',
-            'form-1-start_date' : '2020-10-18',
-            'form-1-end_date' : '2020-10-30',
-            'form-2-start_date' : '2021-10-18',
-            'form-2-end_date' : '2021-10-30',
+            'form-0-START_DATE' : '2019-10-18',
+            'form-0-END_DATE' : '2019-10-51',            
         }
 
         form_data.update(management_form_data)
 
         response = self.client.post(self.url, form_data)
 
+        self.assertTrue(len(response.context['formset'].errors) > 0)
+
+        form_data = {}
+
+        form = CFDForm()
+        contract = cfd.objects.first()
+        contracts = [contract]
+        contracts.extend(contract.get_subsequent_contracts(2))
+
+        for field in form.fields.keys():
+            if field == 'CLIENT':
+                continue
+            
+            form_data.update({
+                f'form-0-{field}' : getattr(contracts[0], field),
+                f'form-1-{field}' : getattr(contracts[1], field),
+                f'form-2-{field}' : getattr(contracts[2], field)
+            })
+
+        client_pk = client.objects.first().pk
+
+        form_data.update(management_form_data)
+        form_data.update({
+            'form-0-START_DATE' : '2019-10-18',
+            'form-0-END_DATE' : '2019-10-30',
+            'form-1-START_DATE' : '2020-10-18',
+            'form-1-END_DATE' : '2020-10-30',
+            'form-2-START_DATE' : '2021-10-18',
+            'form-2-END_DATE' : '2021-10-30',
+            'form-0-RETAIL_90_MAIL_RATES_B' : 'N',
+            'form-0-RETAIL_90_MAIL_RATES_G' : 'N',
+            'form-1-RETAIL_90_MAIL_RATES_B' : 'N',
+            'form-1-RETAIL_90_MAIL_RATES_G' : 'N',
+            'form-2-RETAIL_90_MAIL_RATES_B' : 'N',
+            'form-2-RETAIL_90_MAIL_RATES_G' : 'N',
+            'form-0-CLIENT' : client_pk,
+            'form-0-CONTRACT_TYPE' : 'TBD',
+            'form-1-CLIENT' : client_pk,
+            'form-1-CONTRACT_TYPE' : 'TBD',
+            'form-2-CLIENT' : client_pk,
+            'form-2-CONTRACT_TYPE' : 'TBD',
+        })
+
+
+        response = self.client.post(self.url, form_data)
+        
+        expected_changed_fields = [{
+            'START_DATE' : True,
+            'END_DATE' : True,
+            'RETAIL_90_MAIL_RATES_B' : True,
+            'RETAIL_90_MAIL_RATES_G' : True,
+            'CONTRACT_TYPE' : True
+        },{
+            'START_DATE' : True,
+            'END_DATE' : True,
+            'RETAIL_90_MAIL_RATES_B' : True,
+            'RETAIL_90_MAIL_RATES_G' : True,
+            'CONTRACT_TYPE' : True
+        },{
+            'START_DATE' : True,
+            'END_DATE' : True,
+            'RETAIL_90_MAIL_RATES_B' : True,
+            'RETAIL_90_MAIL_RATES_G' : True,
+            'CONTRACT_TYPE' : True
+        }]
+
         # Checks that the confirmation page came up
         self.assertTemplateUsed('cfd_confirmation.html')
         
+        self.assertTrue(response.context['confirmation'])
+        self.assertEqual(response.context['changed'], expected_changed_fields)
+
+        form_data.update({ 'is_confirmation_page'  : "True" })
+
+        response = self.client.post(self.url, form_data)
+
+        self.assertEqual(response.status_code, 302)
+
+
+class CFDDeleteViewTest(TestCase):
+    def setUp(self):
+         
+        self.client = Client()
+
+        self.user = User.objects.create(username='user', is_superuser=True)
+        self.user.set_password('pass')
+        self.user.save()
+
+        client1 = client.objects.create(CLIENT_NAME='Test Client')
+
+        self.contract = cfd.objects.create(CLIENT=client1, START_DATE=date(2019,10,1), END_DATE=date(2019,10,10))
+
+        self.url = reverse('cfd:cfd_delete', args=[self.contract.pk])
+
+    def test_unauthenticated_get(self):
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/admin/login?next={self.url}")
+
+    def test_unauthenticated_post(self):
+        response = self.client.post(self.url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/admin/login?next={self.url}")
+
+    def test_get(self):
+        self.client.login(username='user', password='pass')
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['object'].pk, self.contract.pk)
+
+    def test_post(self):
+        self.client.login(username='user', password='pass')
+
+        response = self.client.post(self.url)
+
+        self.assertEqual(response.status_code, 302)
+        
+        self.assertEqual(cfd.objects.filter(pk=self.contract.pk).count(), 0)
+
+    
