@@ -1,6 +1,7 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
+from django.shortcuts import render, redirect, get_object_or_404
 
 import reversion
 
@@ -62,6 +63,7 @@ def cfd_list(request, template_name='cfd_list.html'):
     return render(request, template_name, context)
 
 @login_required
+@require_http_methods(["GET"])
 def template_list(request, template_name='template_list.html'):
     records = cfd.objects.filter(IS_TEMPLATE=True)
     data = {
