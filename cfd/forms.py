@@ -88,6 +88,7 @@ class CFDForm(ModelForm):
                 raise forms.ValidationError(
                 "The Contract Start Date must be earlier than the Contract End Date."
             )
+        #TODO: The user should not be able to create a new contract that overlaps an existing contract for the same client. If this error condition is found then the user should be given the option to update the start or end date of the existing contract to correct the error.
         
         return cleaned_data
 
@@ -132,6 +133,7 @@ class CFDFormset(forms.BaseFormSet):
                     for field in changed_fields.keys():
                         old_value, new_value = changed_fields[field]
                         comments += f"Changed {field} from {old_value} to {new_value};\n"
+                        #TODO: Display the field label rather than field name
 
                     reversion.set_comment(comments)
 
