@@ -14,8 +14,9 @@
               {% endfor %}
               <div class="col search-field-col">
                 <input class="search-btn" type="submit" value="Search" />
-              </div>
-            </div>            
+              </div>              
+            </div>  
+            {{ form.errors }}          
           </form>
         </div>        
         
@@ -37,6 +38,20 @@
           <table class="cfd-list">
             {% for r in object_list %}
             <tr><td><a href="{% url "cfd:cfd_edit" r.id %}">{{ r.CLIENT }}: {{ r.START_DATE }} - {{ r.END_DATE }}</a></td>
+            <td><a href="{% url "cfd:cfd_history" r.id %}">History</a></td>
+            <td><a href="{% url "cfd:cfd_copy" r.id %}">Copy</a></td>
+            <td><a href="{% url "cfd:cfd_delete" r.id %}">Delete</a></td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+
+        <div class="cfd-section">
+          <h2>Pending Review</h2>
+          <table class="cfd-list">
+            {% for r in pending %}
+            <tr><td><a href="{% url "cfd:cfd_edit" r.id %}">{{ r.CLIENT }}: {{ r.START_DATE }} - {{ r.END_DATE }}</a></td>
+            <td><a href="{% url "cfd:cfd_history" r.id %}">History</a></td>
             <td><a href="{% url "cfd:cfd_copy" r.id %}">Copy</a></td>
             <td><a href="{% url "cfd:cfd_delete" r.id %}">Delete</a></td>
             </tr>

@@ -1,11 +1,12 @@
+import logging
+
 from django.forms import ModelForm
 from django import forms
-from django.forms.widgets import DateInput, SelectMultiple
-import logging
-#added for form preview
+from django.forms.widgets import DateInput, HiddenInput, SelectMultiple
 from django.http import HttpResponseRedirect
+
+import reversion
 from formtools.preview import FormPreview
-#for multiple forms on page
 
 
 import cfd.models as m
@@ -35,6 +36,7 @@ class CFDForm(ModelForm):
             'START_DATE': DateInput(attrs={'class': 'datepicker'}),
             'END_DATE': DateInput(attrs={'class': 'datepicker'}),
             # 'NON_SPC_CLASSES': forms.SelectMultiple(choices=DROP_DOWN_MENU_41),
+            'confirmed' : HiddenInput(attrs={ 'class' : 'confirmation_flag' })
         }
         fieldsets = (
             ('Client Information', {
@@ -66,10 +68,14 @@ class CFDForm(ModelForm):
             ('Other', {
                 'classes' : ['collapse'],
                 'fields' : ('CONTRACT_TYPE', 'GUAR_MAIL_REBATE', 'GUAR_R90_REBATE', 'GUAR_SPC_M_REBATE', 'GUAR_SPC_R_REBATE', 'RETAIL_90_MAIL_RATES_B', 'RETAIL_90_MAIL_RATES_B_DS',
-                'RETAIL_90_MAIL_RATES_G', 'RETAIL_90_MAIL_RATES_G_DS', 'RETAIL_REBATE_TYPE', 'RETAIL_SPC_REBATE_TYPE', 'MAIL_REBATE_TYPE', 'MAIL_SPC_REBATE_TYPE', 'R90_REBATE_TYPE'
+                'RETAIL_90_MAIL_RATES_G', 'RETAIL_90_MAIL_RATES_G_DS', 'RETAIL_REBATE_TYPE', 'RETAIL_SPC_REBATE_TYPE', 'MAIL_REBATE_TYPE', 'MAIL_SPC_REBATE_TYPE', 'R90_REBATE_TYPE',                
                 )
+            }),
+            ('Hidden', {
+                    'classes' : ['hidden'],
+                    'fields' : ('confirmed',)
             })
-            )
+        )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -82,6 +88,7 @@ class CFDForm(ModelForm):
                 raise forms.ValidationError(
                 "The Contract Start Date must be earlier than the Contract End Date."
             )
+        #TODO: The user should not be able to create a new contract that overlaps an existing contract for the same client. If this error condition is found then the user should be given the option to update the start or end date of the existing contract to correct the error.
         
         return cleaned_data
 
@@ -97,27 +104,40 @@ class CFDForm(ModelForm):
     def get_changed_fields(self, model_object):
         changed = {}
         for field in self.fields.keys():
-            if self.fields[field].initial != getattr(model_object, field):
+            if self.cleaned_data.get(field) != getattr(model_object, field):
                 changed[field] = True
 
         return changed
 
 class CFDFormset(forms.BaseFormSet):
 
-    def save(self, parent_pk):
+    def save(self, parent_pk, current_user):
 
         record = m.cfd.objects.get(pk=parent_pk)
         formset_length = len(self)
 
         records = [record]
         records.extend(record.get_subsequent_contracts(formset_length - 1))
-
+    
         for index, item in enumerate(self.forms):        
             if item.is_valid():
                 current_record = records[index]
 
                 item.set_instance_values(current_record)
-                current_record.save()   
+                with reversion.create_revision():
+                    
+                    reversion.set_user(current_user)
+
+                    changed_fields = current_record.get_changed_fields()
+                    comments = ""
+                    for field in changed_fields.keys():
+                        old_value, new_value = changed_fields[field]
+                        comments += f"Changed {field} from {old_value} to {new_value};\n"
+                        #TODO: Display the field label rather than field name
+
+                    reversion.set_comment(comments)
+
+                    current_record.save()   
                 
 
     def get_changed_fields(self, parent_pk, records=None):
@@ -129,9 +149,9 @@ class CFDFormset(forms.BaseFormSet):
         records.extend(record.get_subsequent_contracts(formset_length - 1))
         
         changed = []
-
-        for index, item in enumerate(records):
-            changed.append(self.forms[index].get_changed_fields(item))
+        if self.is_valid():
+            for index, item in enumerate(records):
+                changed.append(self.forms[index].get_changed_fields(item))
         
         return changed
         
@@ -144,5 +164,13 @@ class CFDSearchForm(forms.Form):
             'placeholder' : 'Client Name'
         })
     )
-    start_date = forms.DateField(required=False)
-    end_date = forms.DateField(required=False)
+    start_date = forms.DateField(required=False,
+        widget=forms.TextInput(attrs={
+                'placeholder' : 'Start Date'
+            })
+    )
+    end_date = forms.DateField(required=False,
+        widget=forms.TextInput(attrs={
+            'placeholder' : 'End Date'
+        })
+    )

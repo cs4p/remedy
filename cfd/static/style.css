@@ -74,6 +74,10 @@ body {
   	display: table-row-group;
 }
 
+fieldset.hidden {
+    display: none !important;
+}
+
 fieldset.collapse {
     display: block;
 }
@@ -167,6 +171,10 @@ fieldset .section-copy-container {
     color: #666;
 }
 
+.search-bar .errorlist {
+    background: #f8f8f8;
+}
+
 input.search-btn {
     border: 1px solid #ccc;
     padding: 2px 10px;
@@ -192,9 +200,18 @@ input.search-btn {
     width: 60%;
 }
 
-.cfd-btn {
-    background: #609ab6;
+.cfd-btn {    
     border-color: #609ab6;
+    background: #79aec8;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.cfd-btn:hover, .cfd-btn:active{
+    background: #609ab6;
 }
 
 #new-button-container {
@@ -213,7 +230,8 @@ input.search-btn {
 }
 
 .cfd-section {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
 }
 
 .cfd-section > h2 {
@@ -222,4 +240,18 @@ input.search-btn {
     padding: 8px;
     font-size: 16px;
     font-weight: bold;
+}
+
+#field-search-container {
+    margin-bottom: 20px;
+}
+
+#field-search-label {
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-right: 10px;
+}
+
+#field-search {
+    width: 55%;    
 }

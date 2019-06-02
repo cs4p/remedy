@@ -1,6 +1,9 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
+from django.shortcuts import render, redirect, get_object_or_404
+
+import reversion
 
 import cfd.forms as f
 from cfd.models import cfd
@@ -18,35 +21,54 @@ def cfd_list(request, template_name='cfd_list.html'):
 
         if form.is_valid():
             records = cfd.search(**form.cleaned_data)
-            client_data = records.filter(IS_TEMPLATE=False)
+            client_data = records.filter(IS_TEMPLATE=False, confirmed=True)
             templates = records.filter(IS_TEMPLATE=True)
+            pending = records.filter(confirmed=False)
 
             context = {
                 'form' : form,
                 'object_list' : client_data,
-                'templates' : templates
+                'templates' : templates,
+                'pending' : pending
             }
 
             return render(request, template_name, context)
+        else:        
+            records = cfd.objects.filter(IS_TEMPLATE=False, confirmed=True)
+            templates = cfd.objects.filter(IS_TEMPLATE=True)
+            pending = cfd.objects.filter(confirmed=False)
+
+            context = {
+                'form' : form,
+                'object_list' : records,
+                'templates' : templates,
+                'pending' : pending
+            }
             
+            return render(request, template_name, context)
+
 
     form = f.CFDSearchForm()
-    records = cfd.objects.filter(IS_TEMPLATE=False)
+    records = cfd.objects.filter(IS_TEMPLATE=False, confirmed=True)
     templates = cfd.objects.filter(IS_TEMPLATE=True)
-    
+    pending = cfd.objects.filter(confirmed=False)
+
     context = {
         'form' : form,
         'object_list' : records,
-        'templates' : templates
+        'templates' : templates,
+        'pending' : pending
     }
       
     return render(request, template_name, context)
 
 @login_required
+@require_http_methods(["GET"])
 def template_list(request, template_name='template_list.html'):
     records = cfd.objects.filter(IS_TEMPLATE=True)
-    data = {}
-    data['object_list'] = records
+    data = {
+        'object_list' : records
+    }
     return render(request, template_name, data)
 
 @login_required
@@ -87,7 +109,7 @@ def cfd_update(request, pk, template_name='cfd_form.html'):
     if request.method == "POST":        
         formset = CFDFormset(request.POST)        
 
-        confirmed = request.POST.get('confirmed', False)
+        confirmed = request.POST.get('is_confirmation_page', False)
         confirmed = confirmed == "True"
 
         if formset.is_valid():            
@@ -126,7 +148,7 @@ def cfd_confirmation(request, pk, formset, confirmed, template_name='cfd_confirm
         formset = CFDFormset(request.POST)
         if confirmed:                     
             if formset.is_valid():
-                formset.save(pk)
+                formset.save(pk, request.user)
 
                 return redirect('cfd:cfd_list')
             else:
@@ -189,3 +211,42 @@ def cfd_create_mutiple(request, template_name="cfd_new_multi.html"):
     return render(request, template_name, {'formset': CFDFormSet, 'form': form, 'RETAIL_90_MAIL_RATES_B_LIST': RETAIL_90_MAIL_RATES_B_LIST,
                                            'RETAIL_90_MAIL_RATES_G_LIST': RETAIL_90_MAIL_RATES_G_LIST})
 
+
+@login_required
+def cfd_history(request, pk):
+    record = get_object_or_404(cfd, pk=pk)
+    
+    logs = cfd.history.all_record_logs(record)
+
+    context = {
+        'record' : record,
+        'logs' : logs
+    }
+    
+    return render(request, 'cfd_history.html', context)
+
+@login_required
+def cfd_history_detail(request, pk, detail_pk):
+    record = get_object_or_404(cfd, pk=pk)
+    
+    version = cfd.history.filter_record_logs(record, pk=detail_pk).get()
+    version = version._object_version.object
+
+    form = f.CFDForm(request.POST or None, instance=record)
+
+    if form.is_valid():
+        with reversion.create_revision():                    
+            reversion.set_user(request.user)
+            reversion.set_comment("Reverted to previous version")
+            form.save()
+
+        return redirect('cfd:cfd_list')
+
+    context = {
+        'record' : record,
+        'version' : version,
+        'form' : form,
+        'fieldsets' : form.Meta.fieldsets
+    }
+    
+    return render(request, 'cfd_recover_form.html', context)

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    <table class="cfd-list">
+        <thead>
+            <th>Date/Time</th>
+            <th>Done By</th>
+            <th>Changes</th>
+            <th></th>
+        </thead>       
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.revision.date_created }}</td>
+                <td>{{ log.revision.user }}</td>
+                <td>{{ log.revision.comment|linebreaks }}</td>
+                <td>
+                    <a href="{% url "cfd:cfd_history_detail" record.id log.id %}">Details</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody> 
+    </table>
+{% endblock %}

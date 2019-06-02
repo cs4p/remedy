@@ -1,9 +1,17 @@
-from django.db import models
-from datetime import *; from dateutil.relativedelta import *
-#from django-extras import PercentField
-from multiselectfield import MultiSelectField
-import calendar
 import logging
+import calendar
+from datetime import *
+from dateutil.relativedelta import *
+
+from django.db import models
+from django.contrib.auth import get_user_model
+
+import reversion
+
+from cfd.fields import MultiSelectField
+from cfd.managers import HistoryManager
+
+User = get_user_model()
 
 # Create your models here.
 class client(models.Model):
@@ -12,8 +20,9 @@ class client(models.Model):
     CLIENT_NAME	= models.CharField('Client Name',max_length=255)
 
     def __str__(self):
-            return self.CLIENT_NAME
+        return self.CLIENT_NAME
 
+@reversion.register()
 class cfd(models.Model):
     class Meta:
             verbose_name = 'Client Financial Record'
@@ -172,13 +181,40 @@ class cfd(models.Model):
     OBSOLETE_NDCS = models.CharField('Obsolete NDCs',max_length=50,choices=DROP_DOWN_MENU_24_CHOICES, default="TDB")
     R90_REBATE_TYPE = models.CharField('Retail 90 Rebate Type',max_length=15,choices=DROP_DOWN_MENU_42, default="TBD")
     IS_TEMPLATE = models.BooleanField("Template?",default=False)
+    confirmed = models.BooleanField(default=True)
+
+    objects = models.Manager()
+    history = HistoryManager()
+
+    @classmethod
+    def search(cls, is_template=None, client_name=None, start_date=None, end_date=None):
+        '''
+        Gets all contracts which start on or before the given end_date and end on or after the 
+        given start_date and belonging to a client with a CLIENT_NAME close to client_name.
+        '''
+        contracts = cls.objects.filter()
+
+        if is_template:
+            contracts = contracts.filter(IS_TEMPLATE=is_template)
+            
+        if client_name:
+            contracts = contracts.filter(CLIENT__CLIENT_NAME__icontains=client_name)
+
+        if start_date:
+            contracts = contracts.filter(END_DATE__gte=start_date)
+
+        if end_date:
+            contracts = contracts.filter(START_DATE__lte=end_date)
+        
+
+        return contracts
 
     def get_subsequent_contracts(self, number_of_contracts):
         '''
-        This function gets the specified number of subsequent contracts.
+        Gets the specified number of non template subsequent contracts.
         If no contracts are found, new ones are instantiated.
         '''
-        contracts = cfd.objects.filter(CLIENT=self.CLIENT, START_DATE__year__gt=self.START_DATE.year, IS_TEMPLATE=False).order_by('START_DATE')[:number_of_contracts]
+        contracts = cfd.objects.filter(CLIENT=self.CLIENT, START_DATE__gt=self.START_DATE, IS_TEMPLATE=False).order_by('START_DATE')[:number_of_contracts]
         contracts = list(contracts)
 
         if len(contracts) < number_of_contracts:
@@ -192,22 +228,29 @@ class cfd(models.Model):
             contracts.extend(new_contracts)
 
         return contracts
-
-    @classmethod
-    def search(cls, is_template=None, client_name=None, start_date=None, end_date=None):
-        contracts = cls.objects.filter()
-
-        if is_template:
-            contracts = cls.objects.filter(IS_TEMPLATE=is_template)
-            
-        if client_name:
-            contracts = contracts.filter(CLIENT__CLIENT_NAME__icontains=client_name)
-
-        if start_date:
-            contracts = contracts.filter(END_DATE__gte=start_date)
-
-        if end_date:
-            contracts = contracts.filter(START_DATE__lte=end_date)
+    
+    def get_changed_fields(self):
+        '''
+        Returns a dict with the changed fields
+        as keys and tuples in the format (OLD_VALUE, NEW_VALUE)
+        as the values and an empty dict for new instances
+        or one with no changes
+        '''
+        if not self.pk:
+            return {}
         
+        manager = self.__class__._default_manager
+        saved_fields = manager.filter(pk=self.pk).values().get()
 
-        return contracts
+        changed_fields = {}
+
+        for field in saved_fields.keys():
+
+            saved_value = saved_fields[field]
+            current_value = getattr(self, field)
+
+            if saved_value != current_value:
+                changed_fields[field] = (saved_value, current_value)
+
+        return changed_fields
+

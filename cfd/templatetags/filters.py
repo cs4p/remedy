@@ -6,11 +6,12 @@ register = template.Library()
 @register.filter
 def get_field_data(form, field):
     field = form.fields[field].get_bound_field(form, field)
-
+    
     return {
         'name' : field.name,
         'label_tag' : field.label_tag(),
         'field' : field,
+        'hidden' : field.is_hidden,
         'help_text' : field.help_text
     }    
 
@@ -28,6 +29,9 @@ def get_key(dictionary, key):
 
 @register.filter
 def get_form_metadata(formset, counter):
+    if counter > len(formset) - 1:
+        raise ValueError
+        
     return {
         'index' : counter,
         'first' : counter == 0,

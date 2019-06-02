@@ -24,6 +24,8 @@ urlpatterns = [
     url(r'^new_multi$', views.cfd_create_mutiple, name='cfd_new_multi'),
     url(r'^edit/(?P<pk>\d+)$', views.cfd_update, name='cfd_edit'),
     url(r'^copy/(?P<pk>\d+)$', views.cfd_copy, name='cfd_copy'),
+    url(r'^history/(?P<pk>\d+)$', views.cfd_history, name='cfd_history'),
+    url(r'^history/(?P<pk>\d+)/(?P<detail_pk>\d+)$', views.cfd_history_detail, name='cfd_history_detail'),
     url(r'^delete/(?P<pk>\d+)$', views.cfd_delete, name='cfd_delete'),
     url(r'^post/$', CFDFormPreview(CFDForm)),
     path('accounts/', include('django.contrib.auth.urls')),

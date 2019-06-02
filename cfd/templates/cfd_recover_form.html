@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% load filters %}
+{% load static %}
+
+{% block main %}
+    
+
+<form  method="post" id="cfd_form">{% csrf_token %}
+
+    <div class="col">
+        {% include "snippets/form_snippet.html" with form=form fieldsets=fieldsets %}
+    </div>
+
+    <button type="button" class="btn btn-primary cfd-btn" data-toggle="modal" data-target="#myModal">
+        Save
+    </button>
+        
+    <div class="modal" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                    
+            <div class="modal-header">
+                <h4 class="modal-title">Confirm Form Submission</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+        
+            <div class="modal-body">
+                Are you sure you want to revert this object to this version ?
+            </div>
+        
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                <input id="submit" class="btn btn-primary" type="submit" value="Save" />
+            </div>
+        
+            </div>
+        </div>
+    </div>       
+</form>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script src="{% static '/admin/js/vendor/jquery/jquery.js' %}"></script>
+<script src="{% static '/admin/js/jquery.init.js' %}"></script>
+<script src="{% static '/admin/js/core.js' %}"></script>
+<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+<script src="{% static '/js/collapse.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="{% static '/js/forms.js' %}"></script>
+
+{% endblock %}
