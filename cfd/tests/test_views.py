@@ -4,6 +4,8 @@ from django.urls import reverse
 from django.forms import formset_factory
 from django.test import Client, TestCase, RequestFactory
 
+import reversion
+
 from cfd.models import cfd, client, User
 from cfd.forms import CFDForm, CFDSearchForm
 from cfd.views import RETAIL_90_MAIL_RATES_B_LIST, RETAIL_90_MAIL_RATES_G_LIST
@@ -230,6 +232,10 @@ class CFDCreateViewTest(TestCase):
         # The view redirects to the list view after a 
         # successful post request  
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('cfd:cfd_list'))
+
+        contract = cfd.objects.filter(**data).first()        
+        self.assertTrue(cfd.history.all_record_logs(contract).exists())
 
         self.assertEqual(len(cfd.objects.filter(**data)), 3)
 
@@ -393,7 +399,11 @@ class CFDUpdateViewTest(TestCase):
         response = self.client.post(self.url, form_data)
 
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('cfd:cfd_list'))
 
+        logs = cfd.history.all_record_logs(contract)
+        self.assertTrue(logs.exists())    
+        self.assertTrue("Changed Contract Start Date from 2019-10-01 to 2019-10-18;\n" in logs.first().revision.comment)
 
 class CFDDeleteViewTest(TestCase):
     def setUp(self):
@@ -436,7 +446,216 @@ class CFDDeleteViewTest(TestCase):
         response = self.client.post(self.url)
 
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('cfd:cfd_list'))
         
         self.assertEqual(cfd.objects.filter(pk=self.contract.pk).count(), 0)
 
-    
+
+class CFDCopyViewTest(TestCase):
+    def setUp(self):
+          
+        self.client = Client()
+
+        self.user = User.objects.create(username='user', is_superuser=True)
+        self.user.set_password('pass')
+        self.user.save()
+
+        client1 = client.objects.create(CLIENT_NAME='Test Client')
+        self.client2 = client.objects.create(CLIENT_NAME='Other Client')
+
+        self.contract = cfd.objects.create(CLIENT=client1, START_DATE=date(2019,10,1), END_DATE=date(2019,10,10))
+
+        self.url = reverse('cfd:cfd_copy', args=[self.contract.pk])
+
+    def test_unauthenticated_get(self):
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/admin/login?next={self.url}")
+
+    def test_unauthenticated_post(self):
+        response = self.client.post(self.url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/admin/login?next={self.url}")
+
+    def test_get(self):
+        self.client.login(username='user', password='pass')
+
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertTemplateUsed('cfd_form.html')
+        self.assertEqual(response.status_code, 200)        
+
+        self.assertEqual(context['form'].instance.pk, None)
+        self.assertEqual(context['fieldsets'], CFDForm.Meta.fieldsets)
+        self.assertEqual(context['form'].instance.START_DATE, self.contract.START_DATE)
+        self.assertEqual(context['RETAIL_90_MAIL_RATES_B_LIST'], RETAIL_90_MAIL_RATES_B_LIST)
+        self.assertEqual(context['RETAIL_90_MAIL_RATES_G_LIST'], RETAIL_90_MAIL_RATES_G_LIST)
+
+    def test_post(self):
+        self.client.login(username='user', password='pass')
+
+        data = {
+            'CLIENT' : self.client2.pk,
+            'START_DATE' : '2019-11-11',
+            'END_DATE' : '2019-12-11',
+            'CONTRACT_TYPE' : 'TBD',
+            'RETAIL_90_MAIL_RATES_B' : 'N',
+            'RETAIL_90_MAIL_RATES_G' : 'N',
+        }
+
+        form_data = {}
+
+        form = CFDForm()
+
+        for field in form.fields.keys():
+            value = getattr(self.contract, field)
+            if field == 'CLIENT' or value in (None, ''):
+                continue
+            
+            form_data.update({
+                field : value,                
+            })
+
+
+        data.update(form_data)
+        response = self.client.post(self.url, data)
+        
+        self.assertEqual(cfd.objects.count(), 2)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(cfd.objects.filter(**data).exists())        
+        self.assertEqual(response.url, reverse('cfd:cfd_list'))
+
+        new_contract = cfd.objects.get(**data)
+        self.assertTrue(cfd.history.all_record_logs(new_contract).exists())
+        
+        
+class CFDHistoryViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+        self.user = User.objects.create(username='user', is_superuser=True)
+        self.user.set_password('pass')
+        self.user.save()
+
+        client1 = client.objects.create(CLIENT_NAME='Test Client')        
+
+        self.contract = cfd.objects.create(CLIENT=client1, START_DATE=date(2019,10,1), END_DATE=date(2019,10,10))
+
+        with reversion.create_revision():                                
+            reversion.set_comment("Test")
+            self.contract.save()
+
+        self.url = reverse('cfd:cfd_history', args=[self.contract.pk])
+
+    def test_unauthenticated_get(self):
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/admin/login?next={self.url}")
+
+    def test_unauthenticated_post(self):
+        response = self.client.post(self.url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/admin/login?next={self.url}")
+
+    def test_get(self):
+        self.client.login(username='user', password='pass')
+
+        response = self.client.get(self.url)
+        context = response.context
+        
+        self.assertEqual(response.status_code, 200)        
+        self.assertTemplateUsed('cfd_history.html')
+
+        self.assertEqual(len(context['logs']), 1)
+        self.assertEqual(context['record'].pk, self.contract.pk)
+        
+    def test_post(self):
+        self.client.login(username='user', password='pass')
+
+        response = self.client.post(self.url, {})
+
+        self.assertEqual(response.status_code, 405)
+
+class CFDHistoryDetailViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+        self.user = User.objects.create(username='user', is_superuser=True)
+        self.user.set_password('pass')
+        self.user.save()
+
+        client1 = client.objects.create(CLIENT_NAME='Test Client')        
+        self.client2 = client.objects.create(CLIENT_NAME='Other Client')
+
+        self.contract = cfd.objects.create(CLIENT=client1, START_DATE=date(2019,10,1), END_DATE=date(2019,10,10))
+
+        with reversion.create_revision():                                
+            reversion.set_comment("Test")
+            self.contract.START_DATE = date(2019,10,8)
+            self.contract.save()
+
+        self.log = cfd.history.all_record_logs(self.contract).first()
+        self.url = reverse('cfd:cfd_history_detail', args=[self.contract.pk, self.log.pk])
+
+    def test_unauthenticated_get(self):
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/admin/login?next={self.url}")
+
+    def test_unauthenticated_post(self):
+        response = self.client.post(self.url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/admin/login?next={self.url}")
+
+    def test_get(self):
+        self.client.login(username='user', password='pass')
+
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed('cfd_recover_form.html')
+                
+        self.assertEqual(context['record'].pk, self.contract.pk)
+        self.assertEqual(context['version'].pk, self.log._object_version.object.pk)
+
+    def test_post(self):
+        self.client.login(username='user', password='pass')
+
+        data = {
+            'CLIENT' : self.client2.pk,
+            'START_DATE' : '2019-11-11',
+            'END_DATE' : '2019-12-11',
+            'CONTRACT_TYPE' : 'TBD',
+            'RETAIL_90_MAIL_RATES_B' : 'N',
+            'RETAIL_90_MAIL_RATES_G' : 'N',
+        }
+
+        form_data = {}
+
+        form = CFDForm()
+
+        for field in form.fields.keys():
+            value = getattr(self.contract, field)
+            if field == 'CLIENT' or value in (None, ''):
+                continue
+            
+            form_data.update({
+                field : value,                
+            })
+
+
+        data.update(form_data)
+        response = self.client.post(self.url, data)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('cfd:cfd_list'))
+
+        self.assertEqual(cfd.history.all_record_logs(self.contract).count(), 2)
