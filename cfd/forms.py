@@ -131,7 +131,7 @@ class CFDFormset(forms.BaseFormSet):
                     comments = ""
                     for field in changed_fields.keys():
                         old_value, new_value = changed_fields[field]
-                        comments += f"Changed {field} from {old_value} to {new_value};\n"
+                        comments += f"Changed {m.cfd._meta.get_field(field).verbose_name} from {old_value} to {new_value};\n"
 
                     reversion.set_comment(comments)
 
