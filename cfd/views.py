@@ -33,20 +33,6 @@ def cfd_list(request, template_name='cfd_list.html'):
             }
 
             return render(request, template_name, context)
-        else:        
-            records = cfd.objects.filter(IS_TEMPLATE=False, confirmed=True)
-            templates = cfd.objects.filter(IS_TEMPLATE=True)
-            pending = cfd.objects.filter(confirmed=False)
-
-            context = {
-                'form' : form,
-                'object_list' : records,
-                'templates' : templates,
-                'pending' : pending
-            }
-            
-            return render(request, template_name, context)
-
 
     form = f.CFDSearchForm()
     records = cfd.objects.filter(IS_TEMPLATE=False, confirmed=True)

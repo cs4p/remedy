@@ -88,6 +88,7 @@ class CFDForm(ModelForm):
                 raise forms.ValidationError(
                 "The Contract Start Date must be earlier than the Contract End Date."
             )
+        #TODO: The user should not be able to create a new contract that overlaps an existing contract for the same client. If this error condition is found then the user should be given the option to update the start or end date of the existing contract to correct the error.
         
         return cleaned_data
 
