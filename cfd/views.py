@@ -33,20 +33,6 @@ def cfd_list(request, template_name='cfd_list.html'):
             }
 
             return render(request, template_name, context)
-        else:        
-            records = cfd.objects.filter(IS_TEMPLATE=False, confirmed=True)
-            templates = cfd.objects.filter(IS_TEMPLATE=True)
-            pending = cfd.objects.filter(confirmed=False)
-
-            context = {
-                'form' : form,
-                'object_list' : records,
-                'templates' : templates,
-                'pending' : pending
-            }
-            
-            return render(request, template_name, context)
-
 
     form = f.CFDSearchForm()
     records = cfd.objects.filter(IS_TEMPLATE=False, confirmed=True)
@@ -87,8 +73,11 @@ def cfd_create(request, template_name='cfd_form.html'):
         formset = CFDFormset(request.POST)
         
         if formset.is_valid():
-            for form in formset:
-                form.save()
+            with reversion.create_revision():                    
+                reversion.set_user(request.user)
+                reversion.set_comment("Created")
+                for form in formset:
+                    form.save()
 
             return redirect('cfd:cfd_list')
         else:
@@ -124,12 +113,12 @@ def cfd_update(request, pk, template_name='cfd_form.html'):
 
             return render(request, template_name, context)
 
-    record_year1, record_year2 = record.get_subsequent_contracts(2)
+    record1, record2 = record.get_subsequent_contracts(2)
 
     formset = CFDFormset()
     formset[0].set_initial_values(record)
-    formset[1].set_initial_values(record_year1)
-    formset[2].set_initial_values(record_year2)
+    formset[1].set_initial_values(record1)
+    formset[2].set_initial_values(record2)
 
     context = {    
         'formset' : formset,
@@ -185,8 +174,11 @@ def cfd_copy(request, pk, template_name="cfd_form.html"):
     record.pk=None
     form = f.CFDForm(request.POST or None, instance=record)
     if form.is_valid():
-        form.save()
-        return redirect('cfd:cfd_list')
+        with reversion.create_revision():                    
+            reversion.set_user(request.user)
+            reversion.set_comment("Created")
+            form.save()
+            return redirect('cfd:cfd_list')
     
     context = {
         'form': form, 
@@ -213,6 +205,7 @@ def cfd_create_mutiple(request, template_name="cfd_new_multi.html"):
 
 
 @login_required
+@require_http_methods(["GET"])
 def cfd_history(request, pk):
     record = get_object_or_404(cfd, pk=pk)
     
@@ -232,7 +225,7 @@ def cfd_history_detail(request, pk, detail_pk):
     version = cfd.history.filter_record_logs(record, pk=detail_pk).get()
     version = version._object_version.object
 
-    form = f.CFDForm(request.POST or None, instance=record)
+    form = f.CFDForm(request.POST or None, instance=version)
 
     if form.is_valid():
         with reversion.create_revision():                    
