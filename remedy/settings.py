@@ -125,3 +125,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 LOGIN_URL = '/admin/login'
 
+CSRF_COOKIE_HTTPONLY = True
+
