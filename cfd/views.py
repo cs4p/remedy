@@ -9,11 +9,14 @@ import cfd.forms as f
 from cfd.models import cfd
 from cfd.admin import cfdAdmin
 
+#This defines the list of fields that should be shown/hidden based on Retail 90 Mail rates values
 RETAIL_90_MAIL_RATES_B_LIST = ["GUAR_BR90_EZBD_DCT", "GUAR_BR90_IZBD_DCT", "GUAR_BR90_DISP_FEE",
                                    "RETAIL_90_MAIL_RATES_B_DS"]
 RETAIL_90_MAIL_RATES_G_LIST = ["THEN GUAR_GR90_EZBD_DCT", "GUAR_GR90_IZBD_DCT", "GUAR_GR90_DISP_FEE",
                                    "RETAIL_90_MAIL_RATES_G_DS"]
 
+# The @login_required decoration tells django that the view requires an authenticated user. Other decorations exist to
+# restrict the view to certain roles.
 @login_required
 def cfd_list(request, template_name='cfd_list.html'):
     if request.method == "POST":

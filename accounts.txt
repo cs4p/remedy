@@ -1,3 +1,5 @@
+These are the sample accounts I created. Delete this file in a production deployment
+
 username	password		Role
 admin_user	7bHADFbHSgFq	Application Admin
 user_mgr	ewB5nvxu		Can Add/Edit/Delete Users

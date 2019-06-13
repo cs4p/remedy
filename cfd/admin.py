@@ -1,3 +1,4 @@
+# This file defines certain functionality in teh Admin interface only. Changes here will not impact the main application screens or functionality.
 from django.contrib import admin
 from reversion.admin import VersionAdmin
 

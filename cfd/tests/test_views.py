@@ -108,18 +108,6 @@ class TemplateListViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, f"/admin/login?next={self.url}")
 
-    def test_get(self):
-        self.client.login(username='user', password='pass')
-        
-        response = self.client.get(self.url)
-
-        self.assertTemplateUsed('template_list.html')
-        self.assertEqual(response.status_code, 200)
-
-        context = response.context
-
-        self.assertEqual(len(context['object_list']), 1)
-
     def test_post(self):
         self.client.login(username='user', password='pass')
 

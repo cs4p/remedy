@@ -14,6 +14,10 @@ from cfd.managers import HistoryManager
 User = get_user_model()
 
 # Create your models here.
+
+# This is a placeholder model. This should be replaced with a reference to the client table in the production database.
+# You can either update this model with all the fields in the client table, or cerate a view with just the Client Name and just adjust the class name to match the name of the table.
+# If you do change the class name, you must also change it in the CFD Model below where the forign key constraint is defined
 class client(models.Model):
     #define fields
     #format is [database_column_name] = models.[FiedlType]('[Display Name]',[options])
@@ -27,11 +31,13 @@ class cfd(models.Model):
     class Meta:
             verbose_name = 'Client Financial Record'
             verbose_name_plural = 'Client Financial Records'
-            #ordering = ('self.client.CLIENT_NAME',)
 
-    #define drop down values
-    #An iterable (e.g., a list or tuple) consisting itself of iterables of exactly two items (e.g. [(A, B), (A, B) ...]) to use as choices for this field. If choices are given, they’re enforced by model validation and the default form widget will be a select box with these choices instead of the standard text field.
-#The first element in each tuple is the actual value to be set on the model, and the second element is the human-readable name. For example:
+
+# define drop down values
+# An iterable (e.g., a list or tuple) consisting itself of iterables of exactly two items (e.g. [(A, B), (A, B) ...]) to use as choices for this field. If choices are given, they’re enforced by model validation and the default form widget will be a select box with these choices instead of the standard text field.
+# The first element in each tuple is the actual value to be set on the model, and the second element is the human-readable name.
+# FYI, the number in the object names refers to the table ID in the excel spreadsheet I was given.
+# In a future version, you migth wnat to create lookup tables in the database for each drop down. You could then update the drop down options without changing code. In this case, the dropdown fields should be replaced with forign keys
 
     DROP_DOWN_MENU_21_CHOICES = (
         ('Y','Y'),
@@ -93,7 +99,7 @@ class cfd(models.Model):
     
     #define fields
     #format is [database_column_name] = models.[FiedlType]('[Display Name]',[options])
-    #CLIENT_NAME = models.CharField('Client Name',max_length=255)
+    #If the name of the client model is changed, you must also change it here
     CLIENT = models.ForeignKey(
                                 client,
                                 on_delete=models.PROTECT)

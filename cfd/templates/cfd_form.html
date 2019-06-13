@@ -1,15 +1,19 @@
+<!--Template for the standard update screen-->
+<!-- This line specifies that the content here should be merged into the base.html-->
 {% extends 'base.html' %}
 {% load i18n static %}
 {% load filters %}
 {% load static %}
 
 {% block main %}
+    <!--begin Search Form-->
     <div id="field-search-container">
         <label id="field-search-label"> Search Fields </label>
         <input id="field-search" type="text"/>
-    </div>    
+    </div>
+    <!--End Search Form-->
 
-     <form  method="post" id="cfd_form">{% csrf_token %}
+    <form  method="post" id="cfd_form">{% csrf_token %}
          <div class="row">
             {% if formset %}
                 {{ formset.management_form }}

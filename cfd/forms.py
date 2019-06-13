@@ -18,6 +18,7 @@ class CFDFormPreview(FormPreview):
         # to a "success" page.
         return HttpResponseRedirect('/form/success')
 
+# This is the Form for a CFD record. Field Groupings are defined here as well as custom error handling such as checking that start date is earlier than end date.
 class CFDForm(ModelForm):
     logger = logging.getLogger('django.server')
 
@@ -109,6 +110,7 @@ class CFDForm(ModelForm):
 
         return changed
 
+# This class handles displaying multiple instances of the CFD form on a single page.
 class CFDFormset(forms.BaseFormSet):
 
     def save(self, parent_pk, current_user):
